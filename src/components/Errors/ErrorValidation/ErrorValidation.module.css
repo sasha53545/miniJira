@@ -1,0 +1,46 @@
+.main {
+    width: 10%;
+    height: 10%;
+    position: absolute;
+    right: 12.5%;
+    top: 28%
+}
+
+.block {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 10%;
+    width: 200%;
+    height: 5.5vh;
+    position: absolute;
+    right: -190%;
+    top: -290%;
+    font-weight: 600;
+    background-color: #f44336;
+}
+
+.svg_block {
+    animation: animate .5s ease-in-out;
+}
+
+.svg_block .block {
+    display: none;
+    animation: animate .5s ease-in-out;
+}
+
+.svg_block:hover .block {
+    display: flex;
+}
+
+@keyframes animate {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+
+}

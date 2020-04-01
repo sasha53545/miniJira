@@ -1,0 +1,73 @@
+.main {
+    width: 100%;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-color: #9e9e9e;
+}
+
+.container {
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    transform: translate(-50%, -50%);
+}
+
+.ob {
+    height: 150px;
+    width: 8px;
+    background: white;
+    border-radius: 10px;
+    margin: 0 5px;
+    animation: loading 0.8s infinite linear;
+}
+
+.ob:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.ob:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.ob:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+.ob:nth-child(5) {
+    animation-delay: 0.4s;
+}
+
+.ob:nth-child(6) {
+    animation-delay: 0.5s;
+}
+
+.ob:nth-child(7) {
+    animation-delay: 0.6s;
+}
+
+.ob:nth-child(8) {
+    animation-delay: 0.7s;
+}
+
+.ob:nth-child(9) {
+    animation-delay: 0.8s;
+}
+
+.ob:nth-child(10) {
+    animation-delay: 0.9s;
+}
+
+@keyframes loading {
+    0% {
+        height: 150px;
+    }
+    50% {
+        height: 0;
+    }
+    100% {
+        height: 150px;
+    }
+}

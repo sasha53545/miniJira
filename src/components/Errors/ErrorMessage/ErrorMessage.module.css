@@ -1,0 +1,24 @@
+.main {
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 7vh;
+    text-align: center;
+    margin: 7% 15% 0 15%;
+    background-color: #f44336;
+    animation: animate .7s ease-in-out;
+}
+
+@keyframes animate {
+    0% {
+        display: none;
+        opacity: 0;
+    }
+
+    100% {
+        display: flex;
+        opacity: 1;
+    }
+
+}
