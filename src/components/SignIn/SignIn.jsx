@@ -2,11 +2,11 @@ import React from "react";
 import css from "./SignIn.module.css";
 import {customHistory} from "../../App";
 import {ErrorMessage} from "../Errors/ErrorMessage/ErrorMessage";
-import {isEmpty} from "../../utils/isEmptyFeild";
 import {ErrorValidation} from "../Errors/ErrorValidation/ErrorValidation";
-import {signInRequest} from "../../service/auth";
+import {googleAuth, signInRequest} from "../../service/auth";
 import {Preloader} from "../Preloader/Preloader";
 import {Footer} from "../Footer/Footer";
+import {facebookAuthIcon, googleAuthIcon} from "../../images/svg";
 
 export class SignIn extends React.Component {
     constructor(props) {
@@ -18,15 +18,38 @@ export class SignIn extends React.Component {
                 password: ''
             },
             errorMessage: '',
-            errorValidation: {
-                email: '',
-                password: '',
-
-                colorEmailInput: '',
-                colorPasswordInput: ''
-            }
+            errors: null
         };
     }
+
+    componentDidMount() {
+        window.gapi.load('auth2', () => {
+            window.gapi.auth2
+                .init({
+                    client_id:
+                        '416520824005-i7rgnt5fcm7rd12av7p7h70ndvnmjodp.apps.googleusercontent.com',
+                })
+        });
+    }
+
+    signInWithGoogle = () => {
+        window.gapi.auth2.getAuthInstance().signIn()
+            .then(googleUser => {
+                const id_token = googleUser.getAuthResponse().id_token;
+                this.props.isFetching(true);
+                return googleAuth(id_token)
+                    .then(response => {
+                        console.log(response);
+                        localStorage.setItem('TOKEN', JSON.stringify(response));
+                        this.props.onChangeFlag(true);
+                        customHistory.push('/dashboard');
+                    })
+                    .catch(error => console.log(error.message))
+                    .finally(() => {
+                        this.props.isFetching(false);
+                    });
+            })
+    };
 
     onChange = (event) => {
         this.setState({
@@ -42,52 +65,43 @@ export class SignIn extends React.Component {
             event.preventDefault();
         }
 
-        if (isEmpty(this.state.form.password) && isEmpty(this.state.form.email)) {
-            this.props.isFetching(true);
-            signInRequest(this.state.form)
-                .then(response => {
-                    localStorage.setItem('TOKEN', JSON.stringify(response));
-                    this.props.onChangeFlag(true);
-                    customHistory.push('/dashboard');
-                    this.props.isFetching(false);
-                })
-                .catch(error => {
-                    this.setState({
-                        errorMessage: error.message
-                    });
-                    this.props.isFetching(false);
+        let errors = this.validate(this.state.form);
+
+        if (errors) {
+            this.setState({errors});
+            return;
+        }
+
+        this.props.isFetching(true);
+        signInRequest(this.state.form)
+            .then(response => {
+                localStorage.setItem('TOKEN', JSON.stringify(response));
+                this.props.onChangeFlag(true);
+                customHistory.push('/dashboard');
+            })
+            .catch(error => {
+                this.setState({
+                    errorMessage: error.message
                 });
-        }
+            })
+            .finally(() => {
+                this.props.isFetching(false);
+            })
+    };
 
-        let email = '';
-        let colorEmailInput = '';
-        if(!isEmpty(this.state.form.email)) {
-            email = 'Enter your email!';
-            colorEmailInput = 'red';
-        } else {
-            email = '';
-            colorEmailInput = ''
-        }
+    validate = (form) => {
+        const errors = {
+            email: form.email.length === 0 ? 'Login shuld not be empty' : null,
+            password: form.password.length === 0 ? 'Password shuld not be empty' : null,
+        };
 
-        let password = '';
-        let colorPasswordInput = '';
-        if(!isEmpty(this.state.form.password)) {
-            password = 'Enter your password!';
-            colorPasswordInput = 'red';
-        } else {
-            password = '';
-            colorPasswordInput = ''
-        }
-
-        this.setState({
-            errorValidation: {
-                email: email,
-                password: password,
-
-                colorEmailInput: colorEmailInput,
-                colorPasswordInput: colorPasswordInput
+        for (let key of Object.keys(errors)) {
+            if (errors[key]) {
+                return errors;
             }
-        });
+        }
+
+        return null;
     };
 
     isCancel = (event) => {
@@ -104,6 +118,7 @@ export class SignIn extends React.Component {
     };
 
     render() {
+        const {errors} = this.state;
         return (
             <div>
                 {(this.props.stateFetch === true) ?
@@ -125,31 +140,48 @@ export class SignIn extends React.Component {
                                     <div className={css.title_form}>
                                         Sign In
                                     </div>
+                                    <div className={css.auth_buttons}>
+                                        <button className={css.auth_button} onClick={this.signInWithGoogle}>
+                                            <div className={css.auth_icon}>
+                                                {googleAuthIcon()}
+                                            </div>
+                                            <div>
+                                                Sign in with Google
+                                            </div>
+                                        </button>
+                                        <button className={css.auth_button} onClick={this.signInWithGoogle}>
+                                            <div className={css.auth_icon}>
+                                                {facebookAuthIcon()}
+                                            </div>
+                                            <div>
+                                                Sign in with Facebook
+                                            </div>
+                                        </button>
+                                    </div>
                                     <form className={css.form} onSubmit={this.onSubmit}>
                                         <div className={css.form_group}>
-                                            <label htmlFor="inputEmail1">Email address:</label>
+                                            <label htmlFor="inputEmail">Email address:</label>
                                             <input type="text" className={css.form_control}
-                                                   style={{borderColor: this.state.errorValidation.colorEmailInput}}
-                                                   name='email' value={this.state.email}
+                                                   style={{borderColor: errors && errors.email ? 'red' : ''}}
+                                                   name='email' value={this.state.form.email}
                                                    onChange={this.onChange}
                                                    aria-describedby="emailHelp" placeholder="Enter email"/>
-                                            {this.state.errorValidation.email &&
-                                            <ErrorValidation error={this.state.errorValidation.email}/>}
+                                            {errors && errors.email &&
+                                            <ErrorValidation error={errors.email}/>}
                                         </div>
                                         <div className={css.form_group}>
-                                            <label htmlFor="inputPassword1">Password:</label>
+                                            <label htmlFor="inputPassword">Password:</label>
                                             <input type="password" className={css.form_control}
-                                                   style={{borderColor: this.state.errorValidation.colorPasswordInput}}
+                                                   style={{borderColor: errors && errors.password ? 'red' : ''}}
                                                    name='password'
-                                                   value={this.state.password} onChange={this.onChange}
+                                                   value={this.state.form.password} onChange={this.onChange}
                                                    placeholder="Password"/>
-                                            {this.state.errorValidation.email &&
-                                            <ErrorValidation error={this.state.errorValidation.password}/>}
+                                            {errors && errors.password &&
+                                            <ErrorValidation error={errors.password}/>}
                                         </div>
                                         <div className={css.buttons}>
                                             <button type="submit" className={css.btn}>Send</button>
-                                            <button type="submit" className={css.btn} onClick={this.isCancel}>Cancel
-                                            </button>
+                                            <button className={css.btn} onClick={this.isCancel}>Cancel</button>
                                         </div>
                                     </form>
                                 </div>

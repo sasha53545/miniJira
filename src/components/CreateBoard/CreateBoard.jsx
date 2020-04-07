@@ -118,21 +118,16 @@ export class CreateBoard extends React.Component {
         }
     };
 
-    checkLifeToken = (getToken) => {
-        console.log(getToken.accessTokenExpiresIn > Date.now());
-        if (getToken.accessTokenExpiresIn > Date.now()) {
-            return Promise.resolve();
-        } else {
-            updateTokensRequest(getToken)
-                .then(response => {
-                    localStorage.removeItem('TOKEN');
-                    localStorage.setItem('TOKEN', JSON.stringify(response));
-                })
-                .catch(error => {
-                    localStorage.removeItem('TOKEN');
-                    this.setState({errorMessage: error.message});
-                    this.props.isFetching(false);
-                });
+    checkLifeToken = async (getToken) => {
+        if (getToken.accessTokenExpiresIn < Date.now()) {
+            try {
+                const response = await updateTokensRequest(getToken);
+                localStorage.removeItem('TOKEN');
+                localStorage.setItem('TOKEN', JSON.stringify(response));
+            } catch (error) {
+                localStorage.removeItem('TOKEN');
+                this.setState({errorMessage: error.message});
+            }
         }
     };
 
@@ -183,7 +178,6 @@ export class CreateBoard extends React.Component {
                 })
                 .then(() => {
                     customHistory.push('/dashboard');
-                    this.props.isFetching(false);
                 })
                 .catch(error => {
                     if(error.message === "Validation error") {
@@ -195,8 +189,10 @@ export class CreateBoard extends React.Component {
                             errorMessage: error.message
                         });
                     }
+                })
+                .finally(() => {
                     this.props.isFetching(false);
-                });
+                })
         }
     };
 

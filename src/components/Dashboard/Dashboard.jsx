@@ -102,7 +102,7 @@ export class Dashboard extends React.Component {
                                         </button>
                                         <button className={css.btn + ' ' + css.btn_prev_next + ' ' + css.btn_next}
                                                 onClick={() => {
-                                                    this.setState({page: Math.min(this.state.page + 1, Math.floor(this.state.items.length / 5))})
+                                                    this.setState({page: Math.min(this.state.page + 1, Math.floor(this.state.items.length  / 5))})
                                                 }}>
                                             <div>
                                                 Next

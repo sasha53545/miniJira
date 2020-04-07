@@ -47,3 +47,19 @@ export const updateTokensRequest = async (getToken) => {
 
     return response.json();
 };
+
+export const googleAuth = async (id_token) => {
+    const response = await fetch('/auth/google', {
+        method: 'POST',
+        headers: {
+            'content-type': 'application/json'
+        },
+        body: JSON.stringify({"id_token": id_token})
+    });
+
+    if(response.status !== 200) {
+        throw await response.json();
+    }
+
+    return response.json();
+};

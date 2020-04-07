@@ -69,7 +69,7 @@
     width: 100%;
     font-size: 130%;
     font-weight: 600;
-    padding: 0 0 2% 0;
+    padding: 0 0 3% 0;
 }
 
 .form_block_without_error_message .form {
@@ -81,7 +81,7 @@
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
-    padding: 4% 0 0 0;
+    padding: 5% 0 0 0;
 
 }
 
