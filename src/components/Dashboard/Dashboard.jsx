@@ -1,13 +1,18 @@
 import React from "react";
 import css from "./Dashboard.module.css";
-import {customHistory} from "../../App";
+import {customHistory, store} from "../../App";
 import {ErrorMessage} from "../Errors/ErrorMessage/ErrorMessage";
 import {Preloader} from "../Preloader/Preloader";
-import {boardGetRequest} from "../../service/board";
 import {Footer} from "../Footer/Footer";
 import {nextIcon, previousIcon} from "../../images/svg";
+import {connect, useDispatch, useSelector} from "react-redux";
+import {boardsAction} from "../../reducers/actions";
+import mapStateToProps from "react-redux/lib/connect/mapStateToProps";
+import mapDispatchToProps from "react-redux/lib/connect/mapDispatchToProps";
+import {BOARDS} from "../../reducers/types";
 
-export class Dashboard extends React.Component {
+class Dashboard extends React.Component {
+
     constructor(props) {
         super(props);
 
@@ -16,7 +21,7 @@ export class Dashboard extends React.Component {
             errorMessage: '',
             page: 0,
             amount: 5
-        }
+        };
     }
 
     onLogout = () => {
@@ -27,18 +32,21 @@ export class Dashboard extends React.Component {
 
     componentDidMount() {
         this.props.isFetching(true);
-        boardGetRequest()
-            .then(response => {
-                this.setState({items: response});
-                this.props.isFetching(false);
-            })
-            .catch(error => {
-                this.setState({errorMessage: error.message});
-                this.props.isFetching(false);
-            });
+        this.props.boardsAction();
+        this.props.isFetching(false);
+        // boardGetRequest()
+        //     .then(response => {
+        //         this.setState({items: response});
+        //         this.props.isFetching(false);
+        //     })
+        //     .catch(error => {
+        //         this.setState({errorMessage: error.message});
+        //         this.props.isFetching(false);
+        //     });
     }
 
     render() {
+        console.log(store.getState());
         return (
             <div>
                 {(this.props.stateFetch === true) ?
@@ -65,7 +73,7 @@ export class Dashboard extends React.Component {
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {this.state.items.slice(this.state.page * this.state.amount, (this.state.page + 1) * this.state.amount).map(item => {
+                                    {this.props.board.slice(this.state.page * this.state.amount, (this.state.page + 1) * this.state.amount).map(item => {
                                         return <tr className={css.tr_body} onClick={() => (customHistory.push(customHistory.push('/tasks')))}>
                                             <td className={css.td_img}>
                                                 <img className={css.img} src={item.icon.value}/>
@@ -123,3 +131,12 @@ export class Dashboard extends React.Component {
         );
     }
 }
+
+export default connect(
+    state => ({
+        board: state.boardsReducer,
+    }),
+    () => ({
+        boardsAction: boardsAction,
+    })
+)(Dashboard);

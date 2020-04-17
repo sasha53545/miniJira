@@ -91,8 +91,8 @@ export class SignIn extends React.Component {
 
     validate = (form) => {
         const errors = {
-            email: form.email.length === 0 ? 'Login shuld not be empty' : null,
-            password: form.password.length === 0 ? 'Password shuld not be empty' : null,
+            email: form.email.length === 0 ? 'Login should not be empty' : null,
+            password: form.password.length === 0 ? 'Password should not be empty' : null,
         };
 
         for (let key of Object.keys(errors)) {
