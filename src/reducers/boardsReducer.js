@@ -1,11 +1,14 @@
 import {BOARDS} from "./types";
 
-let board = [];
+let inititalState = {
+    board: []
+};
 
-export default function boardsReducer(state = board, action) {
+export default function boardsReducer(state = inititalState, action) {
     if (action.type === BOARDS) {
-        return state.concat(action.payload);
-    } else {
-        return state;
+        return {
+            board: state.board.concat(action.payload)
+        };
     }
+    return state;
 }

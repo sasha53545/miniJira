@@ -1,22 +1,22 @@
-import {BOARDS, DICTIONARIES} from './types';
+import {BOARDS, DICTIONARIES, ERROR_MESSAGE, ERROR_VALIDATION, LOADER, LOGGED} from './types';
+import {boardGetRequest} from "../service/board";
+import {dictionaryRequest} from "../service/dictionaries";
 
-export function boardsAction() {
-    return async (dispatch) => {
-        const response = await fetch('/board');
+export const boardsAction = (json) => ({type: BOARDS, payload: json});
+export const dictionariescAction = (json) => ({type: DICTIONARIES, payload: json});
+export const loaderAction = () => ({type: LOADER});
+export const loggedAction = () => ({type: LOGGED});
+export const errorMessageAction = (error) => ({type: ERROR_MESSAGE, payload: error});
+export const errorValidationAction = () => ({type: ERROR_VALIDATION});
 
-        if (response.status !== 200) {
-            throw await response.json();
-        }
+export const boardsAsyncAction = () => ((dispatch) => ((boardGetRequest()
+        .then(response => dispatch(boardsAction(response)))
+        .catch(error => dispatch(errorMessageAction(error.message)))
+        .finally(() => dispatch(loaderAction()))
+)));
 
-        const json = await response.json();
-        console.log(json);
-        dispatch({type: BOARDS, payload: json});
-    };
-}
-
-// export function dictionariesAction() {
-//     return boardGetRequest(dispatch)
-//         .then(response => {
-//             dispatch({type: DICTIONARIES, payload: response});
-//         });
-// }
+export const dictionariesAsyncAction = () => ((dispatch) => ((dictionaryRequest()
+        .then(response => dispatch(dictionariescAction(response)))
+        .catch(error => dispatch(errorMessageAction(error.message)))
+        .finally(() => dispatch(loaderAction()))
+)));

@@ -1,16 +1,18 @@
 import React from "react";
 import css from './CreateBoard.module.css';
-import {customHistory} from "../../App";
-import {ErrorMessage} from "../Errors/ErrorMessage/ErrorMessage";
+import {customHistory} from "../../index";
+import ErrorMessage from "../Errors/ErrorMessage/ErrorMessage";
 import {isEmpty} from "../../utils/isEmptyFeild";
-import {ErrorValidation} from "../Errors/ErrorValidation/ErrorValidation";
+import ErrorValidation from "../Errors/ErrorValidation/ErrorValidation";
 import {updateTokensRequest} from "../../service/auth";
 import {boardPostRequest} from "../../service/board";
-import {dictionaryRequest} from "../../service/dictionary";
+import {dictionaryRequest} from "../../service/dictionaries";
 import {Preloader} from "../Preloader/Preloader";
 import {Footer} from "../Footer/Footer";
+import {connect} from "react-redux";
+import {loaderAction} from "../../reducers/actions";
 
-export class CreateBoard extends React.Component {
+class CreateBoard extends React.Component {
     constructor(props) {
         super(props);
 
@@ -46,20 +48,20 @@ export class CreateBoard extends React.Component {
     }
 
     componentDidMount() {
-        this.props.isFetching(true);
-        dictionaryRequest('categories')
-            .then(response => {
-                this.setState({
-                    formGet: {
-                        ...this.state.formGet,
-                        category: response
-                    }
-                });
-            })
-            .catch(error => {
-                this.setState({errorMessage: error.message});
-                this.props.isFetching(false);
-            });
+        this.props.loaderAction();
+        // dictionaryRequest('categories')
+        //     .then(response => {
+        //         this.setState({
+        //             formGet: {
+        //                 ...this.state.formGet,
+        //                 category: response
+        //             }
+        //         });
+        //     })
+        //     .catch(error => {
+        //         this.setState({errorMessage: error.message});
+        //         this.props.isFetching(false);
+        //     });
 
         dictionaryRequest('board-icons')
             .then(response => {
@@ -69,12 +71,11 @@ export class CreateBoard extends React.Component {
                         icon: response
                     }
                 });
-                this.props.isFetching(false);
             })
             .catch(error => {
                 this.setState({errorMessage: error.message});
-                this.props.isFetching(false);
-            });
+            })
+            .finally(() => this.props.loaderAction());
     }
 
     onChange = (event) => {
@@ -171,7 +172,7 @@ export class CreateBoard extends React.Component {
 
         if (isEmpty(this.state.formPost.title) && isEmpty(this.state.formPost.key) && this.state.formPost.key === keyToUpperCase && this.state.formPost.key.length <= 5) {
             let getToken = JSON.parse(localStorage.getItem('TOKEN'));
-            this.props.isFetching(true);
+            this.props.loaderAction();
             this.checkLifeToken(getToken)
                 .then(() => {
                     return boardPostRequest(getToken, this.state.formPost);
@@ -191,7 +192,7 @@ export class CreateBoard extends React.Component {
                     }
                 })
                 .finally(() => {
-                    this.props.isFetching(false);
+                    this.props.loaderAction();
                 })
         }
     };
@@ -220,7 +221,7 @@ export class CreateBoard extends React.Component {
     render() {
         return (
             <div>
-                {(this.props.stateFetch === true) ?
+                {(this.props.loader === true) ?
                     <Preloader/> :
                     <div className={css.create_board}>
                         <header className={css.header}>
@@ -295,7 +296,7 @@ export class CreateBoard extends React.Component {
                                     </form>
                                 </div>
                                 <div className={css.block_with_error_message}>
-                                    {this.state.errorMessage && <ErrorMessage error={this.state.errorMessage}/>}
+                                    {this.state.errorMessage && <ErrorMessage/>}
                                 </div>
                             </div>
                         </main>
@@ -306,3 +307,13 @@ export class CreateBoard extends React.Component {
         );
     }
 }
+
+export default connect(
+    (state) => ({
+        errorMessage: state.errorsReducer.errorMessage,
+        loader: state.flagsReducer.loader
+    }),
+    (dispatch) => ({
+        loaderAction: () => dispatch(loaderAction()),
+    })
+)(CreateBoard);

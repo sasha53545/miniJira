@@ -1,77 +1,52 @@
 import React from 'react';
 import css from './App.module.css'
-import {createBrowserHistory} from "history";
-import {applyMiddleware, compose, createStore} from "redux";
-import {Switch, Redirect, Route, Router} from "react-router-dom";
+import {Switch, Redirect, Route} from "react-router-dom";
 import Dashboard from "./components/Dashboard/Dashboard";
-import {SignIn} from "./components/SignIn/SignIn";
-import {SignUp} from "./components/SignUp/SignUp";
-import {CreateBoard} from "./components/CreateBoard/CreateBoard";
+import SignIn from "./components/SignIn/SignIn";
+import SignUp from "./components/SignUp/SignUp";
+import CreateBoard from "./components/CreateBoard/CreateBoard";
 import {Tasks} from "./components/Tasks/Tasks";
-import reducer from './reducers/index';
-import {Provider} from "react-redux";
-import thunk from "redux-thunk";
-
-export const customHistory = createBrowserHistory();
-export const store = createStore(reducer, compose(applyMiddleware(thunk)));
+import {connect} from "react-redux";
+import {loggedAction} from "./reducers/actions";
 
 class App extends React.Component {
     constructor(props) {
         super(props);
-
-        this.state = {
-            loggedIn: false,
-            stateFetch: false
-        }
     }
 
     componentDidMount() {
         const token = localStorage.getItem("TOKEN");
         if (token) {
-            this.onChangeFlag(true);
+            this.props.loggedAction();
         }
     }
 
-    onChangeFlag = (loggedIn) => {
-        this.setState({loggedIn})
-    };
-
-    isFetching = (fetching) => {
-        this.setState({
-            stateFetch: fetching
-        });
-    };
-
     render() {
-        console.log('reducer: ', store.getState());
         return (
-            <Provider store={store}>
-                <Router history={customHistory}>
-                    <div className={css.main}>
-                        {this.state.loggedIn && <Switch>
-                            <Route path='/dashboard' render={() => <Dashboard onChangeFlag={this.onChangeFlag}
-                                                                              stateFetch={this.state.stateFetch}
-                                                                              isFetching={this.isFetching}/>}/>
-                            <Route path='/createBoard' render={() => <CreateBoard stateFetch={this.state.stateFetch}
-                                                                                  isFetching={this.isFetching}/>}/>
-                            <Route path='/tasks' render={() => <Tasks stateFetch={this.state.stateFetch}
-                                                                      isFetching={this.isFetching}/>}/>
-                            <Redirect to='/dashboard'/>
-                        </Switch>}
-                        {!this.state.loggedIn && <Switch>
-                            <Route path='/signIn'
-                                   render={() => <SignIn onChangeFlag={this.onChangeFlag} stateFetch={this.state.stateFetch}
-                                                         isFetching={this.isFetching}/>}/>
-                            <Route path='/signUp'
-                                   render={() => <SignUp onChangeFlag={this.onChangeFlag} stateFetch={this.state.stateFetch}
-                                                         isFetching={this.isFetching}/>}/>
-                            <Redirect to='/signIn'/>
-                        </Switch>}
-                    </div>
-                </Router>
-            </Provider>
+            <div className={css.main}>
+                {this.props.logged && <Switch>
+                    <Route path='/dashboard' render={() => <Dashboard/>}/>
+                    <Route path='/createBoard' render={() => <CreateBoard/>}/>
+                    <Route path='/tasks' render={() => <Tasks/>}/>
+                    <Redirect to='/dashboard'/>
+                </Switch>}
+                {!this.props.logged && <Switch>
+                    <Route path='/signIn'
+                           render={() => <SignIn/>}/>
+                    <Route path='/signUp'
+                           render={() => <SignUp/>}/>
+                    <Redirect to='/signIn'/>
+                </Switch>}
+            </div>
         );
     }
 }
 
-export default App;
+export default connect(
+    state => ({
+        logged: state.flagsReducer.logged
+    }),
+    dispatch => ({
+        loggedAction: () => dispatch(loggedAction())
+    })
+)(App);

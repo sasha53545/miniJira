@@ -1,14 +1,16 @@
 import React from "react";
 import css from "./SignUp.module.css";
-import {customHistory} from "../../App";
-import {ErrorMessage} from "../Errors/ErrorMessage/ErrorMessage";
+import {customHistory} from "../../index";
+import ErrorMessage from "../Errors/ErrorMessage/ErrorMessage";
 import {isEmpty} from "../../utils/isEmptyFeild";
-import {ErrorValidation} from "../Errors/ErrorValidation/ErrorValidation";
+import ErrorValidation from "../Errors/ErrorValidation/ErrorValidation";
 import {signUpRequest} from "../../service/auth";
 import {Preloader} from "../Preloader/Preloader";
 import {Footer} from "../Footer/Footer";
+import {connect} from "react-redux";
+import {loaderAction, loggedAction} from "../../reducers/actions";
 
-export class SignUp extends React.Component {
+class SignUp extends React.Component {
     constructor(props) {
         super(props);
 
@@ -28,7 +30,6 @@ export class SignUp extends React.Component {
                 colorEmailInput: '',
                 colorPasswordInput: ''
             },
-            errorMessage: ''
         }
     }
 
@@ -96,20 +97,19 @@ export class SignUp extends React.Component {
         });
 
         if (this.state.form.password === this.state.form.repeatPassword && isEmpty(this.state.form.password) && isEmpty(this.state.form.name) && isEmpty(this.state.form.email)) {
-            this.props.isFetching(true);
+            this.props.loaderAction();
             signUpRequest(this.state.form)
                 .then(response => {
                     localStorage.setItem('TOKEN', JSON.stringify(response));
-                    this.props.onChangeFlag(true);
+                    this.props.loggedAction();
                     customHistory.push('/dashboard');
-                    this.props.isFetching(false);
                 })
                 .catch(error => {
                     this.setState({
                         errorMessage: error.message
                     });
-                    this.props.isFetching(false);
-                });
+                })
+                .finally(() =>  this.props.loaderAction());
         }
     };
 
@@ -131,7 +131,7 @@ export class SignUp extends React.Component {
     render() {
         return (
             <div>
-                {(this.props.stateFetch === true) ?
+                {(this.props.loader === true) ?
                     <Preloader/> :
                     <div className={css.sign_up}>
                         <header className={css.header}>
@@ -199,7 +199,7 @@ export class SignUp extends React.Component {
                                     </form>
                                 </div>
                                 <div className={css.block_with_error_message}>
-                                    {this.state.errorMessage && <ErrorMessage error={this.state.errorMessage}/>}
+                                    {this.state.errorMessage && <ErrorMessage/>}
                                 </div>
                             </div>
                         </main>
@@ -210,3 +210,14 @@ export class SignUp extends React.Component {
         );
     }
 }
+
+export default connect(
+    (state) => ({
+        errorMessage: state.errorsReducer.errorMessage,
+        loader: state.flagsReducer.loader
+    }),
+    (dispatch) => ({
+        loaderAction: () => dispatch(loaderAction()),
+        loggedAction: () => dispatch(loggedAction())
+    })
+)(SignUp);

@@ -22,6 +22,7 @@
     width: 100vw;
     height: 86vh;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
@@ -30,6 +31,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
+    align-items: center;
     width: 70%;
     height: 500px;
     border-left: 2px gray solid;
@@ -45,7 +47,7 @@
 .buttons_and_table .buttons {
     position: absolute;
     bottom: 0;
-    padding: 3% 2% 1.5% 2%;
+    padding: 30px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -53,14 +55,16 @@
 }
 
 .previous_next {
-    width: 310px;
+    width: 350px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 }
 
 .add_field {
-    width: 100px;
+    display: flex;
+    justify-content: center;
+    align-content: center;
 }
 
 .td_img {
@@ -73,28 +77,16 @@
     height: 32%;
 }
 
-.svg_prev_next {
-    width: 25%;
-    height: 25%;
-}
-
 .btn_prev_next {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    text-align: center;
-}
-
-.btn_prev {
-    padding-right: 20px;
-}
-
-.btn_next {
-    padding-left: 20px;
 }
 
 .btn {
-    width: 140px;
+    display: flex;
+    align-items: center;
+    width: 150px;
     height: 50px;
     box-shadow: 0 5px 10px 2px rgba(0, 0, 0, 0.5);
     font-weight: 600;
@@ -123,4 +115,21 @@ tr {
         background-color: gainsboro;
     }
 
+}
+
+.errorMessage {
+    padding-top: 40px;
+    width: 70%;
+}
+
+.svg_next {
+    transform: rotate(180deg);
+}
+
+.prev_text {
+    padding-right: 25px;
+}
+
+.next_text {
+    padding-left: 25px;
 }

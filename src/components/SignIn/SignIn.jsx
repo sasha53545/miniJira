@@ -1,14 +1,16 @@
 import React from "react";
 import css from "./SignIn.module.css";
-import {customHistory} from "../../App";
-import {ErrorMessage} from "../Errors/ErrorMessage/ErrorMessage";
-import {ErrorValidation} from "../Errors/ErrorValidation/ErrorValidation";
+import {customHistory} from "../../index";
+import ErrorMessage from "../Errors/ErrorMessage/ErrorMessage";
+import ErrorValidation from "../Errors/ErrorValidation/ErrorValidation";
 import {googleAuth, signInRequest} from "../../service/auth";
 import {Preloader} from "../Preloader/Preloader";
 import {Footer} from "../Footer/Footer";
 import {facebookAuthIcon, googleAuthIcon} from "../../images/svg";
+import {connect} from "react-redux";
+import {loaderAction, loggedAction} from "../../reducers/actions";
 
-export class SignIn extends React.Component {
+class SignIn extends React.Component {
     constructor(props) {
         super(props);
 
@@ -17,7 +19,6 @@ export class SignIn extends React.Component {
                 email: '',
                 password: ''
             },
-            errorMessage: '',
             errors: null
         };
     }
@@ -36,18 +37,16 @@ export class SignIn extends React.Component {
         window.gapi.auth2.getAuthInstance().signIn()
             .then(googleUser => {
                 const id_token = googleUser.getAuthResponse().id_token;
-                this.props.isFetching(true);
+                this.props.loaderAction();
                 return googleAuth(id_token)
                     .then(response => {
                         console.log(response);
                         localStorage.setItem('TOKEN', JSON.stringify(response));
-                        this.props.onChangeFlag(true);
+                        this.props.loggedAction();
                         customHistory.push('/dashboard');
                     })
                     .catch(error => console.log(error.message))
-                    .finally(() => {
-                        this.props.isFetching(false);
-                    });
+                    .finally(() => this.props.loaderAction());
             })
     };
 
@@ -72,11 +71,11 @@ export class SignIn extends React.Component {
             return;
         }
 
-        this.props.isFetching(true);
+        this.props.loaderAction();
         signInRequest(this.state.form)
             .then(response => {
                 localStorage.setItem('TOKEN', JSON.stringify(response));
-                this.props.onChangeFlag(true);
+                this.props.loggedAction();
                 customHistory.push('/dashboard');
             })
             .catch(error => {
@@ -84,9 +83,7 @@ export class SignIn extends React.Component {
                     errorMessage: error.message
                 });
             })
-            .finally(() => {
-                this.props.isFetching(false);
-            })
+            .finally(() => this.props.loaderAction())
     };
 
     validate = (form) => {
@@ -121,7 +118,7 @@ export class SignIn extends React.Component {
         const {errors} = this.state;
         return (
             <div>
-                {(this.props.stateFetch === true) ?
+                {(this.props.loader === true) ?
                     <Preloader/> :
                     <div className={css.sign_in}>
                         <header className={css.header}>
@@ -186,7 +183,7 @@ export class SignIn extends React.Component {
                                     </form>
                                 </div>
                                 <div className={css.block_with_error_message}>
-                                    {this.state.errorMessage && <ErrorMessage error={this.state.errorMessage}/>}
+                                    {this.props.errorMessage && <ErrorMessage/>}
                                 </div>
                             </div>
                         </main>
@@ -197,3 +194,14 @@ export class SignIn extends React.Component {
         );
     }
 }
+
+export default connect(
+    (state) => ({
+        errorMessage: state.errorsReducer.errorMessage,
+        loader: state.flagsReducer.loader
+    }),
+    (dispatch) => ({
+        loaderAction: () => dispatch(loaderAction()),
+        loggedAction: () => dispatch(loggedAction())
+    })
+)(SignIn);

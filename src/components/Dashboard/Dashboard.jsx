@@ -1,15 +1,12 @@
 import React from "react";
 import css from "./Dashboard.module.css";
-import {customHistory, store} from "../../App";
-import {ErrorMessage} from "../Errors/ErrorMessage/ErrorMessage";
+import {customHistory} from "../../index";
+import ErrorMessage from "../Errors/ErrorMessage/ErrorMessage";
 import {Preloader} from "../Preloader/Preloader";
 import {Footer} from "../Footer/Footer";
-import {nextIcon, previousIcon} from "../../images/svg";
-import {connect, useDispatch, useSelector} from "react-redux";
-import {boardsAction} from "../../reducers/actions";
-import mapStateToProps from "react-redux/lib/connect/mapStateToProps";
-import mapDispatchToProps from "react-redux/lib/connect/mapDispatchToProps";
-import {BOARDS} from "../../reducers/types";
+import {nextPreviousIcon} from "../../images/svg";
+import {connect} from "react-redux";
+import {boardsAsyncAction, loaderAction, loggedAction} from "../../reducers/actions";
 
 class Dashboard extends React.Component {
 
@@ -17,8 +14,6 @@ class Dashboard extends React.Component {
         super(props);
 
         this.state = {
-            items: [],
-            errorMessage: '',
             page: 0,
             amount: 5
         };
@@ -26,30 +21,19 @@ class Dashboard extends React.Component {
 
     onLogout = () => {
         localStorage.removeItem('TOKEN');
-        this.props.onChangeFlag(false);
+        this.props.loggedAction();
         customHistory.push('/signIn')
     };
 
     componentDidMount() {
-        this.props.isFetching(true);
-        this.props.boardsAction();
-        this.props.isFetching(false);
-        // boardGetRequest()
-        //     .then(response => {
-        //         this.setState({items: response});
-        //         this.props.isFetching(false);
-        //     })
-        //     .catch(error => {
-        //         this.setState({errorMessage: error.message});
-        //         this.props.isFetching(false);
-        //     });
+        this.props.loaderAction();
+        this.props.boardsAsyncAction();
     }
 
     render() {
-        console.log(store.getState());
         return (
             <div>
-                {(this.props.stateFetch === true) ?
+                {(this.props.loader === true) ?
                     <Preloader/> :
                     <div className={css.dashboard}>
                         <header className={css.header}>
@@ -73,8 +57,10 @@ class Dashboard extends React.Component {
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {this.props.board.slice(this.state.page * this.state.amount, (this.state.page + 1) * this.state.amount).map(item => {
-                                        return <tr className={css.tr_body} onClick={() => (customHistory.push(customHistory.push('/tasks')))}>
+                                    {this.props.board.slice(this.state.page * this.state.amount, (this.state.page + 1) * this.state.amount).map((item, i) => {
+                                        return <tr className={css.tr_body}
+                                                   key={i}
+                                                   onClick={() => (customHistory.push('/tasks'))}>
                                             <td className={css.td_img}>
                                                 <img className={css.img} src={item.icon.value}/>
                                             </td>
@@ -89,8 +75,8 @@ class Dashboard extends React.Component {
                                 </table>
 
                                 <div className={css.buttons}>
-                                    <div className={css.add_field}>
-                                        <button className={css.btn} onClick={() => {
+                                    <div>
+                                        <button className={css.btn + ' ' + css.add_field} onClick={() => {
                                             customHistory.push('/createBoard')
                                         }}>
                                             Add field
@@ -101,27 +87,29 @@ class Dashboard extends React.Component {
                                                 onClick={() => {
                                                     this.setState({page: Math.max(this.state.page - 1, 0)})
                                                 }}>
-                                            <div className={css.svg_prev_next}>
-                                                {previousIcon()}
-                                            </div>
                                             <div>
+                                                {nextPreviousIcon()}
+                                            </div>
+                                            <div className={css.prev_text}>
                                                 Previous
                                             </div>
                                         </button>
                                         <button className={css.btn + ' ' + css.btn_prev_next + ' ' + css.btn_next}
                                                 onClick={() => {
-                                                    this.setState({page: Math.min(this.state.page + 1, Math.floor(this.state.items.length  / 5))})
+                                                    this.setState({page: Math.min(this.state.page + 1, Math.floor(this.props.board.length / 5))})
                                                 }}>
-                                            <div>
+                                            <div className={css.next_text}>
                                                 Next
                                             </div>
-                                            <div className={css.svg_prev_next}>
-                                                {nextIcon()}
+                                            <div className={css.svg_next}>
+                                                {nextPreviousIcon()}
                                             </div>
                                         </button>
                                     </div>
                                 </div>
-                                {this.state.errorMessage && <ErrorMessage error={this.state.errorMessage}/>}
+                            </div>
+                            <div className={css.errorMessage}>
+                                {this.props.errorMessage && <ErrorMessage/>}
                             </div>
                         </main>
                         <Footer/>
@@ -134,9 +122,13 @@ class Dashboard extends React.Component {
 
 export default connect(
     state => ({
-        board: state.boardsReducer,
+        board: state.boardsReducer.board,
+        errorMessage: state.errorsReducer.errorMessage,
+        loader: state.flagsReducer.loader
     }),
-    () => ({
-        boardsAction: boardsAction,
+    dispatch => ({
+        boardsAsyncAction: () => dispatch(boardsAsyncAction()),
+        loaderAction: () => dispatch(loaderAction()),
+        loggedAction: () => dispatch(loggedAction()),
     })
 )(Dashboard);
