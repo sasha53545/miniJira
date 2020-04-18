@@ -1,6 +1,13 @@
 export const BOARDS = 'BOARDS';
-export const DICTIONARIES = 'DICTIONARIES';
+
+export const CATEGORIES = 'DICTIONARIES/CATEGORIES';
+export const ICONS = 'DICTIONARIES/ICONS';
+
 export const LOADER = 'FLAGS/LOADER';
 export const LOGGED = 'FLAGS/LOGGED';
+
 export const ERROR_MESSAGE = 'ERRORS/ERROR_MESSAGE';
 export const ERROR_VALIDATION = 'ERRORS/ERROR_VALIDATION';
+
+export const SIGNIN = 'AUTH/SIGNIN';
+export const SIGNUP = 'AUTH/SIGNUP';

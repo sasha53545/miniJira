@@ -10,17 +10,17 @@ import {dictionaryRequest} from "../../service/dictionaries";
 import {Preloader} from "../Preloader/Preloader";
 import {Footer} from "../Footer/Footer";
 import {connect} from "react-redux";
-import {loaderAction} from "../../reducers/actions";
+import {
+    categoriesAsyncAction,
+    iconsAsyncAction,
+    loaderAction
+} from "../../reducers/actions";
 
 class CreateBoard extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            formGet: {
-                category: [],
-                icon: []
-            },
             formPost: {
                 title: '',
                 key: '',
@@ -43,39 +43,14 @@ class CreateBoard extends React.Component {
                 colorCategoryInput: '',
                 colorIconInput: ''
             },
-            errorMessage: '',
         }
     }
 
     componentDidMount() {
         this.props.loaderAction();
-        // dictionaryRequest('categories')
-        //     .then(response => {
-        //         this.setState({
-        //             formGet: {
-        //                 ...this.state.formGet,
-        //                 category: response
-        //             }
-        //         });
-        //     })
-        //     .catch(error => {
-        //         this.setState({errorMessage: error.message});
-        //         this.props.isFetching(false);
-        //     });
-
-        dictionaryRequest('board-icons')
-            .then(response => {
-                this.setState({
-                    formGet: {
-                        ...this.state.formGet,
-                        icon: response
-                    }
-                });
-            })
-            .catch(error => {
-                this.setState({errorMessage: error.message});
-            })
-            .finally(() => this.props.loaderAction());
+        this.props.categoriesAsyncAction();
+        this.props.loaderAction();
+        this.props.iconsAsyncAction();
     }
 
     onChange = (event) => {
@@ -152,7 +127,7 @@ class CreateBoard extends React.Component {
         }
         let title = '';
         let colorTitleInput = '';
-        if(!isEmpty(this.state.formPost.title)) {
+        if (!isEmpty(this.state.formPost.title)) {
             title = 'Enter your title!';
             colorTitleInput = 'red';
         } else {
@@ -181,7 +156,7 @@ class CreateBoard extends React.Component {
                     customHistory.push('/dashboard');
                 })
                 .catch(error => {
-                    if(error.message === "Validation error") {
+                    if (error.message === "Validation error") {
                         this.setState({
                             errorMessage: error.validation.key.messages[0]
                         });
@@ -271,7 +246,7 @@ class CreateBoard extends React.Component {
                                                     onChange={this.onChangeCategoryAndIcon} name="category">
                                                 <option value={''} disabled>Select category
                                                 </option>
-                                                {this.state.formGet.category.map(item => {
+                                                {this.props.categories.map(item => {
                                                     return <option>{item.value}</option>
                                                 })}
                                             </select>
@@ -283,7 +258,7 @@ class CreateBoard extends React.Component {
                                                     value={this.state.formPost.icon.value || ''}
                                                     onChange={this.onChangeCategoryAndIcon} name="icon">
                                                 <option value={''} disabled>Select icon</option>
-                                                {this.state.formGet.icon.map(item => {
+                                                {this.props.icons.map(item => {
                                                     return <option>{item.value}</option>
                                                 })}
                                             </select>
@@ -311,9 +286,13 @@ class CreateBoard extends React.Component {
 export default connect(
     (state) => ({
         errorMessage: state.errorsReducer.errorMessage,
-        loader: state.flagsReducer.loader
+        loader: state.flagsReducer.loader,
+        categories: state.dictionariesReducer.categories,
+        icons: state.dictionariesReducer.icons
     }),
     (dispatch) => ({
         loaderAction: () => dispatch(loaderAction()),
+        categoriesAsyncAction: () => dispatch(categoriesAsyncAction()),
+        iconsAsyncAction: () => dispatch(iconsAsyncAction()),
     })
 )(CreateBoard);
