@@ -14,9 +14,9 @@ export class Tasks extends React.Component {
             <div>
                 {(this.props.stateFetch === true) ?
                     <Preloader/> :
-                    <div className={css.tasks}>
-                        <header className={css.header}>
-                            <div>
+                    <div>
+                        <header className={css.header_title}>
+                            <div className={css.header_nav}>
                                 <h1>MiniJira</h1>
                             </div>
                             <div onClick={this.onLogout}>

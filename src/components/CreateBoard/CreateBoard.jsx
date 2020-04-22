@@ -1,20 +1,18 @@
 import React from "react";
 import css from './CreateBoard.module.css';
-import {customHistory} from "../../index";
+import {customHistory} from "../../App";
 import ErrorMessage from "../Errors/ErrorMessage/ErrorMessage";
 import {isEmpty} from "../../utils/isEmptyFeild";
 import ErrorValidation from "../Errors/ErrorValidation/ErrorValidation";
 import {updateTokensRequest} from "../../service/auth";
 import {boardPostRequest} from "../../service/board";
-import {dictionaryRequest} from "../../service/dictionaries";
 import {Preloader} from "../Preloader/Preloader";
 import {Footer} from "../Footer/Footer";
 import {connect} from "react-redux";
-import {
-    categoriesAsyncAction,
-    iconsAsyncAction,
-    loaderAction
-} from "../../reducers/actions";
+import {fetchedIconsAction} from "../../reducers/icons";
+import {fetchedCategoriesAction} from "../../reducers/categories";
+import {errorMessageAction} from "../../reducers/errors";
+import {loaderAction} from "../../reducers/flags";
 
 class CreateBoard extends React.Component {
     constructor(props) {
@@ -47,10 +45,8 @@ class CreateBoard extends React.Component {
     }
 
     componentDidMount() {
-        this.props.loaderAction();
-        this.props.categoriesAsyncAction();
-        this.props.loaderAction();
-        this.props.iconsAsyncAction();
+        this.props.fetchedIconsAction();
+        this.props.fetchedCategoriesAction();
     }
 
     onChange = (event) => {
@@ -102,7 +98,6 @@ class CreateBoard extends React.Component {
                 localStorage.setItem('TOKEN', JSON.stringify(response));
             } catch (error) {
                 localStorage.removeItem('TOKEN');
-                this.setState({errorMessage: error.message});
             }
         }
     };
@@ -157,13 +152,9 @@ class CreateBoard extends React.Component {
                 })
                 .catch(error => {
                     if (error.message === "Validation error") {
-                        this.setState({
-                            errorMessage: error.validation.key.messages[0]
-                        });
+                        this.props.errorMessageAction(error.validation.key.messages[0]);
                     } else {
-                        this.setState({
-                            errorMessage: error.message
-                        });
+                        this.props.errorMessageAction(error.message);
                     }
                 })
                 .finally(() => {
@@ -198,21 +189,21 @@ class CreateBoard extends React.Component {
             <div>
                 {(this.props.loader === true) ?
                     <Preloader/> :
-                    <div className={css.create_board}>
+                    <div className={css.body_wrap}>
                         <header className={css.header}>
-                            <div>
+                            <div className={css.header_title}>
                                 <h1>MiniJira</h1>
                             </div>
-                            <div onClick={() => {
+                            <div className={css.header_nav} onClick={() => {
                                 customHistory.push('/dashboard')
                             }}>
                                 Back
                             </div>
                         </header>
                         <main className={css.main}>
-                            <div className={css.form_block}>
-                                <div className={css.form_block_without_error_message}>
-                                    <div className={css.title_form}>
+                            <div className={css.content}>
+                                <div className={css.form_block}>
+                                    <div className={css.title}>
                                         Add Field
                                     </div>
                                     <form className={css.form}
@@ -246,8 +237,8 @@ class CreateBoard extends React.Component {
                                                     onChange={this.onChangeCategoryAndIcon} name="category">
                                                 <option value={''} disabled>Select category
                                                 </option>
-                                                {this.props.categories.map(item => {
-                                                    return <option>{item.value}</option>
+                                                {this.props.categories.map((item, index) => {
+                                                    return <option key={index}>{item.value}</option>
                                                 })}
                                             </select>
                                         </div>
@@ -258,8 +249,8 @@ class CreateBoard extends React.Component {
                                                     value={this.state.formPost.icon.value || ''}
                                                     onChange={this.onChangeCategoryAndIcon} name="icon">
                                                 <option value={''} disabled>Select icon</option>
-                                                {this.props.icons.map(item => {
-                                                    return <option>{item.value}</option>
+                                                {this.props.icons.map((item, index) => {
+                                                    return <option key={index}>{item.value}</option>
                                                 })}
                                             </select>
                                         </div>
@@ -270,12 +261,14 @@ class CreateBoard extends React.Component {
                                         </div>
                                     </form>
                                 </div>
-                                <div className={css.block_with_error_message}>
-                                    {this.state.errorMessage && <ErrorMessage/>}
+                                <div className={css.error_message}>
+                                    {this.props.errorMessage && <ErrorMessage/>}
                                 </div>
                             </div>
                         </main>
-                        <Footer/>
+                        <footer className={css.footer}>
+                            <Footer/>
+                        </footer>
                     </div>
                 }
             </div>
@@ -285,14 +278,15 @@ class CreateBoard extends React.Component {
 
 export default connect(
     (state) => ({
-        errorMessage: state.errorsReducer.errorMessage,
-        loader: state.flagsReducer.loader,
-        categories: state.dictionariesReducer.categories,
-        icons: state.dictionariesReducer.icons
+        errorMessage: state.errors.errorMessage,
+        loader: state.flags.loader,
+        categories: state.categories,
+        icons: state.icons
     }),
     (dispatch) => ({
         loaderAction: () => dispatch(loaderAction()),
-        categoriesAsyncAction: () => dispatch(categoriesAsyncAction()),
-        iconsAsyncAction: () => dispatch(iconsAsyncAction()),
+        fetchedCategoriesAction: () => dispatch(fetchedCategoriesAction()),
+        errorMessageAction: () => dispatch(errorMessageAction()),
+        fetchedIconsAction: () => dispatch(fetchedIconsAction())
     })
 )(CreateBoard);

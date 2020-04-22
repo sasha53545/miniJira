@@ -11,5 +11,5 @@ function ErrorMessage(props) {
 }
 
 export default connect(
-    state => ({errorMessage: state.errorsReducer.errorMessage})
+    state => ({errorMessage: state.errors.errorMessage})
 )(ErrorMessage);

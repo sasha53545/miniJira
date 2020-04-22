@@ -1,6 +1,6 @@
 import React from "react";
 import css from "./SignUp.module.css";
-import {customHistory} from "../../index";
+import {customHistory} from "../../App";
 import ErrorMessage from "../Errors/ErrorMessage/ErrorMessage";
 import {isEmpty} from "../../utils/isEmptyFeild";
 import ErrorValidation from "../Errors/ErrorValidation/ErrorValidation";
@@ -8,7 +8,7 @@ import {signUpRequest} from "../../service/auth";
 import {Preloader} from "../Preloader/Preloader";
 import {Footer} from "../Footer/Footer";
 import {connect} from "react-redux";
-import {loaderAction, loggedAction} from "../../reducers/actions";
+import {loaderAction, loggedAction} from "../../reducers/flags";
 
 class SignUp extends React.Component {
     constructor(props) {
@@ -84,7 +84,6 @@ class SignUp extends React.Component {
 
         this.setState({
             ...this.state,
-            errorMessage: errorMessage,
             errorValidation: {
                 name: name,
                 email: email,
@@ -109,7 +108,7 @@ class SignUp extends React.Component {
                         errorMessage: error.message
                     });
                 })
-                .finally(() =>  this.props.loaderAction());
+                .finally(() => this.props.loaderAction());
         }
     };
 
@@ -133,21 +132,21 @@ class SignUp extends React.Component {
             <div>
                 {(this.props.loader === true) ?
                     <Preloader/> :
-                    <div className={css.sign_up}>
+                    <div>
                         <header className={css.header}>
-                            <div>
+                            <div className={css.header_title}>
                                 <h1>MiniJira</h1>
                             </div>
-                            <div onClick={() => {
+                            <div className={css.header_nav} onClick={() => {
                                 customHistory.push('/signIn')
                             }}>
                                 Sign In
                             </div>
                         </header>
                         <main className={css.main}>
-                            <div className={css.form_block}>
-                                <div className={css.form_block_without_error_message}>
-                                    <div className={css.title_form}>
+                            <div className={css.content}>
+                                <div className={css.form_block}>
+                                    <div className={css.title}>
                                         Sign Up
                                     </div>
                                     <form className={css.form}
@@ -198,12 +197,14 @@ class SignUp extends React.Component {
                                         </div>
                                     </form>
                                 </div>
-                                <div className={css.block_with_error_message}>
+                                <div className={css.error_message}>
                                     {this.state.errorMessage && <ErrorMessage/>}
                                 </div>
                             </div>
                         </main>
-                        <Footer/>
+                        <footer className={css.footer}>
+                            <Footer/>
+                        </footer>
                     </div>
                 }
             </div>
@@ -213,8 +214,8 @@ class SignUp extends React.Component {
 
 export default connect(
     (state) => ({
-        errorMessage: state.errorsReducer.errorMessage,
-        loader: state.flagsReducer.loader
+        errorMessage: state.errors.errorMessage,
+        loader: state.flags.loader
     }),
     (dispatch) => ({
         loaderAction: () => dispatch(loaderAction()),

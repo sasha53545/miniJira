@@ -1,7 +1,7 @@
 import React from "react";
 import css from './Preloader.module.css';
 
-export function Preloader(props) {
+export function Preloader() {
     return (
         <div className={css.main}>
             <div className={css.container}>

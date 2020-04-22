@@ -17,5 +17,5 @@ function ErrorValidation(props) {
 }
 
 export default connect(
-    state => ({errorValidation: state.errorsReducer.errorValidation})
+    state => ({errorValidation: state.errors.errorValidation})
 )(ErrorValidation);

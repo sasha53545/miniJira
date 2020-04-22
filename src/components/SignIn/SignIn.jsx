@@ -1,6 +1,6 @@
 import React from "react";
 import css from "./SignIn.module.css";
-import {customHistory} from "../../index";
+import {customHistory} from "../../App";
 import ErrorMessage from "../Errors/ErrorMessage/ErrorMessage";
 import ErrorValidation from "../Errors/ErrorValidation/ErrorValidation";
 import {googleAuth, signInRequest} from "../../service/auth";
@@ -8,7 +8,7 @@ import {Preloader} from "../Preloader/Preloader";
 import {Footer} from "../Footer/Footer";
 import {facebookAuthIcon, googleAuthIcon} from "../../images/svg";
 import {connect} from "react-redux";
-import {loaderAction, loggedAction} from "../../reducers/actions";
+import {loaderAction, loggedAction} from "../../reducers/flags";
 
 class SignIn extends React.Component {
     constructor(props) {
@@ -120,21 +120,21 @@ class SignIn extends React.Component {
             <div>
                 {(this.props.loader === true) ?
                     <Preloader/> :
-                    <div className={css.sign_in}>
+                    <div>
                         <header className={css.header}>
-                            <div>
+                            <div className={css.header_title}>
                                 <h1>MiniJira</h1>
                             </div>
-                            <div onClick={() => {
+                            <div className={css.header_nav} onClick={() => {
                                 customHistory.push('/signUp')
                             }}>
                                 Sign Up
                             </div>
                         </header>
                         <main className={css.main}>
-                            <div className={css.form_block}>
-                                <div className={css.form_block_without_error_message}>
-                                    <div className={css.title_form}>
+                            <div className={css.content}>
+                                <div className={css.form_block}>
+                                    <div className={css.title}>
                                         Sign In
                                     </div>
                                     <div className={css.auth_buttons}>
@@ -182,12 +182,14 @@ class SignIn extends React.Component {
                                         </div>
                                     </form>
                                 </div>
-                                <div className={css.block_with_error_message}>
+                                <div className={css.error_message}>
                                     {this.props.errorMessage && <ErrorMessage/>}
                                 </div>
                             </div>
                         </main>
-                        <Footer/>
+                        <footer className={css.footer}>
+                            <Footer/>
+                        </footer>
                     </div>
                 }
             </div>
@@ -197,8 +199,8 @@ class SignIn extends React.Component {
 
 export default connect(
     (state) => ({
-        errorMessage: state.errorsReducer.errorMessage,
-        loader: state.flagsReducer.loader
+        errorMessage: state.errors.errorMessage,
+        loader: state.flags.loader
     }),
     (dispatch) => ({
         loaderAction: () => dispatch(loaderAction()),

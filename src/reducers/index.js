@@ -1,12 +1,14 @@
 import {combineReducers} from "redux";
-import boardsReducer from './boardsReducer.js';
-import dictionariesReducer from './dictionariesReducer.js';
-import flagsReducer from "./flagsReducer";
-import errorsReducer from "./errorsReducer";
+import board from './board.js';
+import flags from "./flags";
+import errors from "./errors";
+import icons from "./icons";
+import categories from "./categories";
 
 export default combineReducers({
-    boardsReducer,
-    dictionariesReducer,
-    flagsReducer,
-    errorsReducer
+    board,
+    icons,
+    categories,
+    flags,
+    errors
 });

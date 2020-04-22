@@ -1,21 +1,22 @@
-.dashboard {
-    width: 100vw;
-    height: 100vh;
-    display: block;
-    position: static;
-}
-
 .header {
-    height: 8vh;
+    height: 70px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 0 2% 0 2%;
+    padding: 0 50px 0 20px;
     background-color: #9e9e9e;
     box-shadow: 0 15px 30px 4px rgba(0, 0, 0, 0.5);
     font-weight: 600;
+}
+
+.header_title {
     cursor: default;
+}
+
+.header_nav {
+    cursor: pointer;
+    font-size: 1.3em;
 }
 
 .main {
@@ -27,12 +28,21 @@
     align-items: center;
 }
 
+.content {
+    width: 60%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .buttons_and_table {
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 70%;
+    width: 100%;
     height: 500px;
     border-left: 2px gray solid;
     border-right: 2px gray solid;
@@ -117,9 +127,9 @@ tr {
 
 }
 
-.errorMessage {
-    padding-top: 40px;
-    width: 70%;
+.error_message {
+    width: 100%;
+    padding-top: 20px;
 }
 
 .svg_next {
@@ -132,4 +142,16 @@ tr {
 
 .next_text {
     padding-left: 25px;
+}
+
+.footer {
+    width: 100%;
+
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    position: absolute;
+    bottom: 0;
 }
