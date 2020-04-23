@@ -41,14 +41,12 @@ function* categoriesWorker() {
     try {
         yield put(requestedCategoriesAction);
         const json = yield call(() => dictionariesRequest('categories'));
-        console.log(json);
         yield put(succeededCategoriesAction(json));
         yield put(errorMessageAction(''));
     } catch (error) {
         yield put(errorMessageAction(error.message));
         yield put(failedCategoriesAction());
-    }
-    finally {
+    } finally {
         yield put(loaderAction());
     }
 }
@@ -58,14 +56,12 @@ function* boardsWorker() {
         yield put(loaderAction());
         yield put(requestedBoardAction);
         const json = yield call(() => boardGetRequest());
-        console.log(json);
         yield put(succeededBoardAction(json));
         yield put(errorMessageAction(''));
     } catch (error) {
         yield put(errorMessageAction(error.message));
         yield put(failedBoardAction());
-    }
-    finally {
+    } finally {
         yield put(loaderAction());
     }
 }

@@ -4,7 +4,7 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 0 50px 0 20px;
+    padding: 0 20px 0 20px;
     background-color: #9e9e9e;
     box-shadow: 0 15px 30px 4px rgba(0, 0, 0, 0.5);
     font-weight: 600;
@@ -15,8 +15,13 @@
 }
 
 .header_nav {
+    width: 150px;
+
+    display: flex;
+    justify-content: space-around;
+
     cursor: pointer;
-    font-size: 1.3em;
+    font-size: 1.2em;
 }
 
 /*------------------------------------*/

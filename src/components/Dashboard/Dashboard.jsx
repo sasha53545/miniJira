@@ -20,12 +20,6 @@ class Dashboard extends React.Component {
         };
     }
 
-    onLogout = () => {
-        localStorage.removeItem('TOKEN');
-        this.props.loggedAction();
-        customHistory.push('/signIn')
-    };
-
     componentDidMount() {
         this.props.fetchedBoardAction();
     }
@@ -40,8 +34,10 @@ class Dashboard extends React.Component {
                             <div className={css.header_title}>
                                 <h1>MiniJira</h1>
                             </div>
-                            <div className={css.header_nav} onClick={this.onLogout}>
-                                Log Out
+                            <div className={css.header_nav}>
+                                <div onClick={this.props.onLogout}>
+                                    Log Out
+                                </div>
                             </div>
                         </header>
                         <main className={css.main}>

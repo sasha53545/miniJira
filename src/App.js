@@ -33,14 +33,20 @@ class App extends React.Component {
         }
     }
 
+    onLogout = () => {
+        localStorage.removeItem('TOKEN');
+        this.props.loggedAction();
+        customHistory.push('/signIn')
+    };
+
     render() {
         return (
             <Router history={customHistory}>
                 <div className={css.main}>
                     {this.props.logged && <Switch>
-                        <Route path='/dashboard' render={() => <Dashboard/>}/>
-                        <Route path='/createBoard' render={() => <CreateBoard/>}/>
-                        <Route path='/tasks' render={() => <Tasks/>}/>
+                        <Route path='/dashboard' render={() => <Dashboard onLogout={this.onLogout}/>}/>
+                        <Route path='/createBoard' render={() => <CreateBoard onLogout={this.onLogout}/>}/>
+                        <Route path='/tasks' render={() => <Tasks onLogout={this.onLogout}/>}/>
                         <Redirect to='/dashboard'/>
                     </Switch>}
                     {!this.props.logged && <Switch>
