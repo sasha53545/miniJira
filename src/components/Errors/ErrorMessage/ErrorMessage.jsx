@@ -5,11 +5,13 @@ import {connect} from "react-redux";
 function ErrorMessage(props) {
     return (
         <div className={css.main}>
-            {props.errorMessage}
+            {props.error}
         </div>
     );
 }
 
 export default connect(
-    state => ({errorMessage: state.errors.errorMessage})
+    state => ({
+        error: state.board.error || state.auth.error || state.categories.error || state.icons.error
+    })
 )(ErrorMessage);

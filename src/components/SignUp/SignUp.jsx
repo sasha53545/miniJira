@@ -1,26 +1,20 @@
 import React from "react";
 import css from "./SignUp.module.css";
 import {customHistory} from "../../App";
-import ErrorMessage from "../Errors/ErrorMessage/ErrorMessage";
 import {isEmpty} from "../../utils/isEmptyFeild";
 import ErrorValidation from "../Errors/ErrorValidation/ErrorValidation";
 import {signUpRequest} from "../../service/auth";
 import {Preloader} from "../Preloader/Preloader";
 import {Footer} from "../Footer/Footer";
 import {connect} from "react-redux";
-import {loaderAction, loggedAction} from "../../reducers/flags";
+import {logged} from "../../reducers/flags";
+import ErrorMessage from "../Errors/ErrorMessage/ErrorMessage";
 
 class SignUp extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            form: {
-                name: '',
-                email: '',
-                password: '',
-                repeatPassword: ''
-            },
             errorValidation: {
                 name: '',
                 email: '',
@@ -96,11 +90,11 @@ class SignUp extends React.Component {
         });
 
         if (this.state.form.password === this.state.form.repeatPassword && isEmpty(this.state.form.password) && isEmpty(this.state.form.name) && isEmpty(this.state.form.email)) {
-            this.props.loaderAction();
+            this.props.loader();
             signUpRequest(this.state.form)
                 .then(response => {
                     localStorage.setItem('TOKEN', JSON.stringify(response));
-                    this.props.loggedAction();
+                    this.props.logged();
                     customHistory.push('/dashboard');
                 })
                 .catch(error => {
@@ -108,7 +102,7 @@ class SignUp extends React.Component {
                         errorMessage: error.message
                     });
                 })
-                .finally(() => this.props.loaderAction());
+                .finally(() => this.props.loader());
         }
     };
 
@@ -200,7 +194,7 @@ class SignUp extends React.Component {
                                     </form>
                                 </div>
                                 <div className={css.error_message}>
-                                    {this.state.errorMessage && <ErrorMessage/>}
+                                    {this.props.errorAuth && <ErrorMessage/>}
                                 </div>
                             </div>
                         </main>
@@ -216,11 +210,11 @@ class SignUp extends React.Component {
 
 export default connect(
     (state) => ({
-        errorMessage: state.errors.errorMessage,
-        loader: state.flags.loader
+        errorAuth: state.auth.error,
+        loaderAuth: state.auth.loader
     }),
-    (dispatch) => ({
-        loaderAction: () => dispatch(loaderAction()),
-        loggedAction: () => dispatch(loggedAction())
-    })
+    {
+        auth,
+        logged
+    }
 )(SignUp);

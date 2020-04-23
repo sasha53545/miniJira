@@ -1,28 +1,32 @@
 import produce from "immer";
 
-export const FETCHED_BOARD = 'FETCHED_BOARDS';
 export const FETCHED_BOARD_REQUESTED = 'FETCHED_BOARDS_REQUEST';
 export const FETCHED_BOARD_SUCCEEDED = 'FETCHED_BOARDS_SUCCEEDED';
 export const FETCHED_BOARD_FAILED = 'FETCHED_BOARDS_FAILED';
 
-export const fetchedBoardAction = () => ({type: FETCHED_BOARD});
-export const requestedBoardAction = () => ({type: FETCHED_BOARD_REQUESTED});
-export const succeededBoardAction = (json) => ({type: FETCHED_BOARD_SUCCEEDED, payload: json});
-export const failedBoardAction = () => ({type: FETCHED_BOARD_FAILED});
+export const requestedBoard = () => ({type: FETCHED_BOARD_REQUESTED});
+export const succeededBoard = (json) => ({type: FETCHED_BOARD_SUCCEEDED, payload: json});
+export const failedBoard = () => ({type: FETCHED_BOARD_FAILED});
 
-const initialState = [];
+const INITIAL_STATE = {
+    data: [],
+    loader: false,
+    error: false
+};
 
-export default function board(state = initialState, action) {
-    return produce(state, draft => {
-        switch (action.type) {
-            case FETCHED_BOARD_REQUESTED:
-                return draft;
-            case FETCHED_BOARD_SUCCEEDED:
-                return draft = action.payload;
-            case FETCHED_BOARD_FAILED:
-                return state;
-            default:
-                return draft;
-        }
-    });
-}
+export default (state = INITIAL_STATE, action) => produce(state, draft => {
+    switch (action.type) {
+        case FETCHED_BOARD_REQUESTED:
+            draft.loader = true;
+            break;
+        case FETCHED_BOARD_SUCCEEDED:
+            draft.data = action.payload;
+            draft.loader = false;
+            break;
+        case FETCHED_BOARD_FAILED:
+            draft.loader = false;
+            break;
+        default:
+            return state;
+    }
+});

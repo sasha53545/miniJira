@@ -9,8 +9,8 @@ import {boardPostRequest} from "../../service/board";
 import {Preloader} from "../Preloader/Preloader";
 import {Footer} from "../Footer/Footer";
 import {connect} from "react-redux";
-import {fetchedIconsAction} from "../../reducers/icons";
-import {fetchedCategoriesAction} from "../../reducers/categories";
+import {requestedIcons} from "../../reducers/icons";
+import {requestedCategories} from "../../reducers/categories";
 import {errorMessageAction} from "../../reducers/errors";
 import {loaderAction} from "../../reducers/flags";
 
@@ -45,8 +45,8 @@ class CreateBoard extends React.Component {
     }
 
     componentDidMount() {
-        this.props.fetchedIconsAction();
-        this.props.fetchedCategoriesAction();
+        this.props.requestedIcons();
+        this.props.requestedCategories();
     }
 
     onChange = (event) => {
@@ -187,7 +187,7 @@ class CreateBoard extends React.Component {
     render() {
         return (
             <div>
-                {(this.props.loader === true) ?
+                {(this.props.loaderIcons === true || this.props.loaderCategories === true) ?
                     <Preloader/> :
                     <div className={css.body_wrap}>
                         <header className={css.header}>
@@ -268,7 +268,7 @@ class CreateBoard extends React.Component {
                                     </form>
                                 </div>
                                 <div className={css.error_message}>
-                                    {this.props.errorMessage && <ErrorMessage/>}
+                                    {(this.props.errorIconsAuth || this.props.errorCategoriesAuth)  && <ErrorMessage/>}
                                 </div>
                             </div>
                         </main>
@@ -284,15 +284,15 @@ class CreateBoard extends React.Component {
 
 export default connect(
     (state) => ({
-        errorMessage: state.errors.errorMessage,
-        loader: state.flags.loader,
-        categories: state.categories,
-        icons: state.icons
+        categories: state.categories.data,
+        icons: state.icons.data,
+        loaderCategories: state.categories.loader,
+        loaderIcons: state.icons.loader,
+        errorCategoriesAuth: state.categories.error,
+        errorIconsAuth: state.icons.error,
     }),
-    (dispatch) => ({
-        loaderAction: () => dispatch(loaderAction()),
-        fetchedCategoriesAction: () => dispatch(fetchedCategoriesAction()),
-        errorMessageAction: () => dispatch(errorMessageAction()),
-        fetchedIconsAction: () => dispatch(fetchedIconsAction())
-    })
+    {
+        requestedCategories,
+        requestedIcons
+    }
 )(CreateBoard);

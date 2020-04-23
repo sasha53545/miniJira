@@ -8,17 +8,14 @@ import {Preloader} from "../Preloader/Preloader";
 import {Footer} from "../Footer/Footer";
 import {facebookAuthIcon, googleAuthIcon} from "../../images/svg";
 import {connect} from "react-redux";
-import {loaderAction, loggedAction} from "../../reducers/flags";
+import {logged} from "../../reducers/flags";
+import {requestedSignIn} from "../../reducers/auth";
 
 class SignIn extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            form: {
-                email: '',
-                password: ''
-            },
             errors: null
         };
     }
@@ -37,16 +34,15 @@ class SignIn extends React.Component {
         window.gapi.auth2.getAuthInstance().signIn()
             .then(googleUser => {
                 const id_token = googleUser.getAuthResponse().id_token;
-                this.props.loaderAction();
+                this.props.loader();
                 return googleAuth(id_token)
                     .then(response => {
-                        console.log(response);
                         localStorage.setItem('TOKEN', JSON.stringify(response));
-                        this.props.loggedAction();
+                        this.props.logged();
                         customHistory.push('/dashboard');
                     })
                     .catch(error => console.log(error.message))
-                    .finally(() => this.props.loaderAction());
+                    .finally(() => this.props.loader());
             })
     };
 
@@ -71,11 +67,10 @@ class SignIn extends React.Component {
             return;
         }
 
-        this.props.loaderAction();
-        signInRequest(this.state.form)
+        this.props.requestedSignIn()
             .then(response => {
                 localStorage.setItem('TOKEN', JSON.stringify(response));
-                this.props.loggedAction();
+                this.props.logged();
                 customHistory.push('/dashboard');
             })
             .catch(error => {
@@ -83,7 +78,7 @@ class SignIn extends React.Component {
                     errorMessage: error.message
                 });
             })
-            .finally(() => this.props.loaderAction())
+            .finally(() => this.props.loader())
     };
 
     validate = (form) => {
@@ -185,7 +180,7 @@ class SignIn extends React.Component {
                                     </form>
                                 </div>
                                 <div className={css.error_message}>
-                                    {this.props.errorMessage && <ErrorMessage/>}
+                                    {this.props.errorAuth && <ErrorMessage/>}
                                 </div>
                             </div>
                         </main>
@@ -201,11 +196,11 @@ class SignIn extends React.Component {
 
 export default connect(
     (state) => ({
-        errorMessage: state.errors.errorMessage,
-        loader: state.flags.loader
+        errorAuth: state.auth.error,
+        loaderAuth: state.auth.loader
     }),
-    (dispatch) => ({
-        loaderAction: () => dispatch(loaderAction()),
-        loggedAction: () => dispatch(loggedAction())
-    })
+    {
+        requestedSignIn,
+        logged
+    }
 )(SignIn);

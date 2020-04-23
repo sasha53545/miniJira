@@ -13,8 +13,8 @@ import {applyMiddleware, compose, createStore} from "redux";
 import reducer from "./reducers";
 import thunk from "redux-thunk";
 import {createBrowserHistory} from "history";
-import {loggedAction} from "./reducers/flags";
-import produce from "immer";
+import {logged} from "./reducers/flags";
+
 
 export const sagaMiddleware = createSagaMiddleware();
 export const store = createStore(reducer, compose(applyMiddleware(thunk, sagaMiddleware), window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()));
@@ -35,7 +35,7 @@ class App extends React.Component {
 
     onLogout = () => {
         localStorage.removeItem('TOKEN');
-        this.props.loggedAction();
+        this.props.logged();
         customHistory.push('/signIn')
     };
 
@@ -66,7 +66,7 @@ export default connect(
     state => ({
         logged: state.flags.logged
     }),
-    dispatch => ({
-        loggedAction: () => dispatch(loggedAction())
-    })
+    {
+        logged
+    }
 )(App);
