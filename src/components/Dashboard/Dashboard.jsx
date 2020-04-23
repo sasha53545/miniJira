@@ -6,8 +6,8 @@ import {Preloader} from "../Preloader/Preloader";
 import {Footer} from "../Footer/Footer";
 import {nextPreviousIcon} from "../../images/svg";
 import {connect} from "react-redux";
-import {fetchedBoardAction} from "../../reducers/board";
-import {loaderAction, loggedAction} from "../../reducers/flags";
+import {requestedBoard} from "../../reducers/board";
+import {logged} from "../../reducers/flags";
 
 class Dashboard extends React.Component {
 
@@ -21,7 +21,7 @@ class Dashboard extends React.Component {
     }
 
     componentDidMount() {
-        this.props.fetchedBoardAction();
+        this.props.requestedBoard();
     }
 
     render() {
@@ -106,7 +106,7 @@ class Dashboard extends React.Component {
                                     </div>
                                 </div>
                                 <div className={css.error_message}>
-                                    {this.props.errorMessage && <ErrorMessage/>}
+                                    {this.props.errorAuth && <ErrorMessage/>}
                                 </div>
                             </div>
                         </main>
@@ -122,13 +122,11 @@ class Dashboard extends React.Component {
 
 export default connect(
     state => ({
-        board: state.board,
-        errorMessage: state.errors.errorMessage,
-        loader: state.flags.loader
+        board: state.board.data,
+        loader: state.board.loader,
+        errorAuth: state.board.error,
     }),
-    dispatch => ({
-        fetchedBoardAction: () => dispatch(fetchedBoardAction()),
-        loaderAction: () => dispatch(loaderAction()),
-        loggedAction: () => dispatch(loggedAction()),
-    })
+    {
+        requestedBoard,
+    }
 )(Dashboard);
