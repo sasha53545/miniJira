@@ -1,26 +1,27 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import css from "./SignIn.module.css";
-import {customHistory} from "../../App";
+import {customHistory} from "../../index";
 import ErrorMessage from "../Errors/ErrorMessage/ErrorMessage";
 import ErrorValidation from "../Errors/ErrorValidation/ErrorValidation";
-import {googleAuth, signInRequest} from "../../service/auth";
+import {googleAuth} from "../../service/auth";
 import {Preloader} from "../Preloader/Preloader";
 import {Footer} from "../Footer/Footer";
 import {facebookAuthIcon, googleAuthIcon} from "../../images/svg";
-import {connect} from "react-redux";
-import {logged} from "../../reducers/flags";
-import {requestedSignIn} from "../../reducers/auth";
+import {useDispatch, useSelector} from "react-redux";
+import {authState, requestedSignIn, requestLocalStorageSetItem} from "../../reducers/auth";
 
-class SignIn extends React.Component {
-    constructor(props) {
-        super(props);
+const SignIn = (props) => {
+    const errorAuth = useSelector(state => state.auth.error);
+    const loaderAuth = useSelector(state => state.auth.loader);
+    const dispatch = useDispatch();
 
-        this.state = {
-            errors: null
-        };
-    }
+    const [form, setForm] = useState({
+        email: '',
+        password: ''
+    });
+    const [errorsValidation, setErrorsValidation] = useState(null);
 
-    componentDidMount() {
+    useEffect(() => {
         window.gapi.load('auth2', () => {
             window.gapi.auth2
                 .init({
@@ -28,62 +29,49 @@ class SignIn extends React.Component {
                         '416520824005-i7rgnt5fcm7rd12av7p7h70ndvnmjodp.apps.googleusercontent.com',
                 })
         });
-    }
+    }, []);
 
-    signInWithGoogle = () => {
+    const signInWithGoogle = () => {
         window.gapi.auth2.getAuthInstance().signIn()
             .then(googleUser => {
                 const id_token = googleUser.getAuthResponse().id_token;
-                this.props.loader();
+                // props.loader();
                 return googleAuth(id_token)
                     .then(response => {
-                        localStorage.setItem('TOKEN', JSON.stringify(response));
-                        this.props.logged();
+                        requestLocalStorageSetItem('TOKEN', response);
+                        dispatch(authState());
                         customHistory.push('/dashboard');
                     })
                     .catch(error => console.log(error.message))
-                    .finally(() => this.props.loader());
+                    .finally(() => props.loader());
             })
     };
 
-    onChange = (event) => {
-        this.setState({
-            form: {
-                ...this.state.form,
-                [event.target.name]: event.target.value
-            }
+    const onChange = (event) => {
+        setForm({
+            ...form,
+            [event.target.name]: event.target.value
         });
     };
 
-    onSubmit = (event) => {
+    const onSubmit = (event) => {
         if (event) {
             event.preventDefault();
         }
 
-        let errors = this.validate(this.state.form);
+        let errors = validateForm(form);
 
         if (errors) {
-            this.setState({errors});
-            return;
+            setErrorsValidation(errors);
+            return null;
         }
 
-        this.props.requestedSignIn()
-            .then(response => {
-                localStorage.setItem('TOKEN', JSON.stringify(response));
-                this.props.logged();
-                customHistory.push('/dashboard');
-            })
-            .catch(error => {
-                this.setState({
-                    errorMessage: error.message
-                });
-            })
-            .finally(() => this.props.loader())
+        dispatch(requestedSignIn(form.email, form.password));
     };
 
-    validate = (form) => {
+    const validateForm = (form) => {
         const errors = {
-            email: form.email.length === 0 ? 'Login should not be empty' : null,
+            email: form.email.length === 0 ? 'Name should not be empty' : null,
             password: form.password.length === 0 ? 'Password should not be empty' : null,
         };
 
@@ -96,111 +84,97 @@ class SignIn extends React.Component {
         return null;
     };
 
-    isCancel = (event) => {
+    const isCancel = (event) => {
         if (event) {
             event.preventDefault();
         }
 
-        this.setState({
-            form: {
-                email: '',
-                password: '',
-            },
+        setForm({
+            email: '',
+            password: ''
         });
     };
 
-    render() {
-        const {errors} = this.state;
-        return (
-            <div>
-                {(this.props.loader === true) ?
-                    <Preloader/> :
-                    <div>
-                        <header className={css.header}>
-                            <div className={css.header_title}>
-                                <h1>MiniJira</h1>
+    return (
+        <div>
+            {(loaderAuth === true) ?
+                <Preloader/> :
+                <div>
+                    <header className={css.header}>
+                        <div className={css.header_title}>
+                            <h1>MiniJira</h1>
+                        </div>
+                        <div className={css.header_nav}>
+                            <div onClick={() => {
+                                customHistory.push('/signUp')
+                            }}>
+                                Sign Up
                             </div>
-                            <div className={css.header_nav}>
-                                <div onClick={() => {
-                                    customHistory.push('/signUp')
-                                }}>
-                                    Sign Up
+                        </div>
+                    </header>
+                    <main className={css.main}>
+                        <div className={css.content}>
+                            <div className={css.form_block}>
+                                <div className={css.title}>
+                                    Sign In
                                 </div>
-                            </div>
-                        </header>
-                        <main className={css.main}>
-                            <div className={css.content}>
-                                <div className={css.form_block}>
-                                    <div className={css.title}>
-                                        Sign In
+                                <div className={css.auth_buttons}>
+                                    <button className={css.auth_button} onClick={signInWithGoogle}>
+                                        <div className={css.auth_icon}>
+                                            {googleAuthIcon()}
+                                        </div>
+                                        <div>
+                                            Sign in with Google
+                                        </div>
+                                    </button>
+                                    <button className={css.auth_button} onClick={signInWithGoogle}>
+                                        <div className={css.auth_icon}>
+                                            {facebookAuthIcon()}
+                                        </div>
+                                        <div>
+                                            Sign in with Facebook
+                                        </div>
+                                    </button>
+                                </div>
+                                <form className={css.form} onSubmit={onSubmit}>
+                                    <div className={css.form_group}>
+                                        <label htmlFor="inputEmail">Email address:</label>
+                                        <input type="text" className={css.form_control}
+                                               style={{borderColor: errorsValidation && errorsValidation.email ? 'red' : ''}}
+                                               name='email' value={form.email}
+                                               onChange={onChange}
+                                               aria-describedby="emailHelp" placeholder="Enter email"/>
+                                        {errorsValidation && errorsValidation.email &&
+                                        <ErrorValidation error={errorsValidation.email}/>}
                                     </div>
-                                    <div className={css.auth_buttons}>
-                                        <button className={css.auth_button} onClick={this.signInWithGoogle}>
-                                            <div className={css.auth_icon}>
-                                                {googleAuthIcon()}
-                                            </div>
-                                            <div>
-                                                Sign in with Google
-                                            </div>
-                                        </button>
-                                        <button className={css.auth_button} onClick={this.signInWithGoogle}>
-                                            <div className={css.auth_icon}>
-                                                {facebookAuthIcon()}
-                                            </div>
-                                            <div>
-                                                Sign in with Facebook
-                                            </div>
-                                        </button>
+                                    <div className={css.form_group}>
+                                        <label htmlFor="inputPassword">Password:</label>
+                                        <input type="password" className={css.form_control}
+                                               style={{borderColor: errorsValidation && errorsValidation.password ? 'red' : ''}}
+                                               name='password'
+                                               value={form.password} onChange={onChange}
+                                               placeholder="Password"/>
+                                        {errorsValidation && errorsValidation.password &&
+                                        <ErrorValidation error={errorsValidation.password}/>}
                                     </div>
-                                    <form className={css.form} onSubmit={this.onSubmit}>
-                                        <div className={css.form_group}>
-                                            <label htmlFor="inputEmail">Email address:</label>
-                                            <input type="text" className={css.form_control}
-                                                   style={{borderColor: errors && errors.email ? 'red' : ''}}
-                                                   name='email' value={this.state.form.email}
-                                                   onChange={this.onChange}
-                                                   aria-describedby="emailHelp" placeholder="Enter email"/>
-                                            {errors && errors.email &&
-                                            <ErrorValidation error={errors.email}/>}
-                                        </div>
-                                        <div className={css.form_group}>
-                                            <label htmlFor="inputPassword">Password:</label>
-                                            <input type="password" className={css.form_control}
-                                                   style={{borderColor: errors && errors.password ? 'red' : ''}}
-                                                   name='password'
-                                                   value={this.state.form.password} onChange={this.onChange}
-                                                   placeholder="Password"/>
-                                            {errors && errors.password &&
-                                            <ErrorValidation error={errors.password}/>}
-                                        </div>
-                                        <div className={css.buttons}>
-                                            <button type="submit" className={css.btn}>Send</button>
-                                            <button className={css.btn} onClick={this.isCancel}>Cancel</button>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div className={css.error_message}>
-                                    {this.props.errorAuth && <ErrorMessage/>}
-                                </div>
+                                    <div className={css.buttons}>
+                                        <button type="submit" className={css.btn}>Send</button>
+                                        <button className={css.btn} onClick={isCancel}>Cancel</button>
+                                    </div>
+                                </form>
                             </div>
-                        </main>
-                        <footer className={css.footer}>
-                            <Footer/>
-                        </footer>
-                    </div>
-                }
-            </div>
-        );
-    }
+                            <div className={css.error_message}>
+                                {errorAuth && <ErrorMessage/>}
+                            </div>
+                        </div>
+                    </main>
+                    <footer className={css.footer}>
+                        <Footer/>
+                    </footer>
+                </div>
+            }
+        </div>
+    );
 }
 
-export default connect(
-    (state) => ({
-        errorAuth: state.auth.error,
-        loaderAuth: state.auth.loader
-    }),
-    {
-        requestedSignIn,
-        logged
-    }
-)(SignIn);
+export default SignIn;

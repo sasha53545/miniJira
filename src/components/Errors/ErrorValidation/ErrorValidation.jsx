@@ -1,7 +1,6 @@
 import React from "react";
 import css from './ErrorValidation.module.css'
 import {errorValidationIcon} from "../../../images/svg";
-import {connect} from "react-redux";
 
 function ErrorValidation(props) {
     return (
@@ -16,6 +15,4 @@ function ErrorValidation(props) {
     )
 }
 
-export default connect(
-    state => ({errorValidation: state.errors.errorValidation})
-)(ErrorValidation);
+export default ErrorValidation;
