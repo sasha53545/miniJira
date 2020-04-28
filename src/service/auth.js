@@ -1,4 +1,4 @@
-export const signInRequest = async (form) => {
+export const signInAsync = async (form) => {
     const response = await fetch('/auth/login', {
         method: 'POST',
         headers: {
@@ -14,7 +14,7 @@ export const signInRequest = async (form) => {
     return response.json();
 };
 
-export const signUpRequest = async (form) => {
+export const signUpAsync = async (form) => {
     const response = await fetch('/auth/register', {
         method: 'POST',
         headers: {
@@ -30,7 +30,7 @@ export const signUpRequest = async (form) => {
     return response.json();
 };
 
-export const updateTokensRequest = async (getToken) => {
+export const updateTokensAsync = async (getToken) => {
     const response = await fetch('/auth/update-tokens', {
         method: 'POST',
         headers: {
@@ -48,7 +48,7 @@ export const updateTokensRequest = async (getToken) => {
     return response.json();
 };
 
-export const googleAuth = async (id_token) => {
+export const googleAuthAsync = async (id_token) => {
     const response = await fetch('/auth/google', {
         method: 'POST',
         headers: {

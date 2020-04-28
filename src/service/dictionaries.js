@@ -1,4 +1,4 @@
-export const dictionariesRequest = async (nameOfDictionary) => {
+export const dictionariesAsync = async (nameOfDictionary) => {
     const response = await fetch(`/dictionaries/${nameOfDictionary}`);
 
     if (response.status !== 200) {

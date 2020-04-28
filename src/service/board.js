@@ -1,4 +1,4 @@
-export const boardPostRequest = async (getToken, form) => {
+export const boardPostAsync = async (getToken, form) => {
     const response = await fetch('/board', {
         method: 'POST',
         headers: {
@@ -15,7 +15,7 @@ export const boardPostRequest = async (getToken, form) => {
     return response.json();
 };
 
-export const boardGetRequest = async () => {
+export const boardGetAsync = async () => {
     const response = await fetch('/board');
 
     if (response.status !== 200) {

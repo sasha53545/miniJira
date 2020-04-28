@@ -6,8 +6,8 @@ import {Preloader} from "../Preloader/Preloader";
 import {Footer} from "../Footer/Footer";
 import {nextPreviousIcon} from "../../images/svg";
 import {useDispatch, useSelector} from "react-redux";
-import {requestedBoard} from "../../reducers/board";
-import {requestLocalStorageRemoveItem} from "../../reducers/auth";
+import {boardRequest} from "../../reducers/board";
+import {localStorageRemoveItemRequest} from "../../reducers/auth";
 
 const Dashboard = () => {
     const board = useSelector(state => state.board.data);
@@ -21,8 +21,8 @@ const Dashboard = () => {
     });
 
     useEffect(() => {
-        dispatch(requestedBoard());
-    }, [requestedBoard]);
+        dispatch(boardRequest());
+    }, [boardRequest]);
 
     return (
         <div>
@@ -35,7 +35,7 @@ const Dashboard = () => {
                         </div>
                         <div className={css.header_nav}>
                             <div onClick={() => {
-                                dispatch(requestLocalStorageRemoveItem('TOKEN'));
+                                dispatch(localStorageRemoveItemRequest('TOKEN'));
                             }}>
                                 Log Out
                             </div>

@@ -6,7 +6,7 @@ import {Preloader} from "../Preloader/Preloader";
 import {Footer} from "../Footer/Footer";
 import {useDispatch, useSelector} from "react-redux";
 import ErrorMessage from "../Errors/ErrorMessage/ErrorMessage";
-import {requestedSignUp} from "../../reducers/auth";
+import {requestedSignUp, signUpRequest} from "../../reducers/auth";
 
 const SignUp = () => {
     const errorAuth = useSelector(state => state.auth.error);
@@ -40,7 +40,7 @@ const SignUp = () => {
             return;
         }
 
-        dispatch(requestedSignUp(form.name, form.email, form.password));
+        dispatch(signUpRequest(form));
     };
 
     const validateForm = (form) => {

@@ -3,18 +3,17 @@ import css from './CreateBoard.module.css';
 import {customHistory} from "../../index";
 import ErrorMessage from "../Errors/ErrorMessage/ErrorMessage";
 import ErrorValidation from "../Errors/ErrorValidation/ErrorValidation";
-import {updateTokensRequest} from "../../service/auth";
-import {boardPostRequest} from "../../service/board";
+import {updateTokensAsync} from "../../service/auth";
+import {boardPostAsync} from "../../service/board";
 import {Preloader} from "../Preloader/Preloader";
 import {Footer} from "../Footer/Footer";
 import {useDispatch, useSelector} from "react-redux";
-import {requestedIcons} from "../../reducers/icons";
-import {requestedCategories} from "../../reducers/categories";
 import {
-    requestLocalStorageGetItem,
-    requestLocalStorageRemoveItem,
-    requestLocalStorageSetItem
+    localStorageGetItemRequest,
+    localStorageRemoveItemRequest, localStorageSetItemRequest,
 } from "../../reducers/auth";
+import {iconsRequest} from "../../reducers/icons";
+import {categoriesRequest} from "../../reducers/categories";
 
 const CreateBoard = () => {
     const categories = useSelector(state => state.categories.data);
@@ -41,9 +40,9 @@ const CreateBoard = () => {
     const [errorsValidation, setErrorsValidation] = useState(null);
 
     useEffect(() => {
-        dispatch(requestedIcons());
-        dispatch(requestedCategories());
-    }, [requestedIcons, requestedCategories]);
+        dispatch(iconsRequest());
+        dispatch(categoriesRequest());
+    }, [iconsRequest, categoriesRequest]);
 
     const onChange = (event) => {
         if (event) {
@@ -83,11 +82,11 @@ const CreateBoard = () => {
     const checkLifeToken = async (getToken) => {
         if (getToken.accessTokenExpiresIn < Date.now()) {
             try {
-                const response = await updateTokensRequest(getToken);
-                dispatch(requestLocalStorageRemoveItem('TOKEN'));
-                dispatch(requestLocalStorageSetItem('TOKEN', response));
+                const response = await updateTokensAsync(getToken);
+                dispatch(localStorageRemoveItemRequest('TOKEN'));
+                dispatch(localStorageSetItemRequest({token: 'TOKEN', data: response}));
             } catch (error) {
-                dispatch(requestLocalStorageRemoveItem('TOKEN'));
+                dispatch(localStorageRemoveItemRequest('TOKEN'));
             }
         }
     };
@@ -104,12 +103,12 @@ const CreateBoard = () => {
             return;
         }
 
-        dispatch(requestLocalStorageGetItem('TOKEN'));
+        dispatch(localStorageGetItemRequest('TOKEN'));
         let getToken = dataLocalstorage;
         // this.props.loaderAction();
         checkLifeToken(getToken)
             .then(() => {
-                return boardPostRequest(getToken, formPost);
+                return boardPostAsync(getToken, formPost);
             })
             .then(() => {
                 customHistory.push('/dashboard');
@@ -176,7 +175,7 @@ const CreateBoard = () => {
                                 Back
                             </div>
                             <div onClick={() => {
-                                dispatch(requestLocalStorageRemoveItem('TOKEN'));
+                                dispatch(localStorageRemoveItemRequest('TOKEN'));
                             }}>
                                 Log Out
                             </div>
@@ -253,7 +252,7 @@ const CreateBoard = () => {
             }
         </div>
     );
-}
+};
 
 export default CreateBoard;
 

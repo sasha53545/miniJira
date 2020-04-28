@@ -1,36 +1,30 @@
 import {call, put, takeEvery} from 'redux-saga/effects'
-import {dictionariesRequest} from "../service/dictionaries";
-import {boardGetRequest} from "../service/board";
-import {failedBoard, FETCHED_BOARD_REQUESTED, succeededBoard} from "./board";
-import {failedIcons, FETCHED_ICONS_REQUESTED, succeededIcons} from "./icons";
-import {failedCategories, FETCHED_CATEGORIES_REQUESTED, succeededCategories} from "./categories";
+import {dictionariesAsync} from "../service/dictionaries";
+import {boardGetAsync} from "../service/board";
+import {boardFail, boardSucceed} from "./board";
+import {iconsFail, iconsSucceed} from "./icons";
 import {
-    failedSignIn,
-    failedSignUp,
-    failLocalStorageGetItem,
-    failLocalStorageRemoveItem, failLocalStorageSetItem,
-    FETCHED_SIGN_IN_REQUESTED,
-    FETCHED_SIGN_UP_REQUESTED,
-    LOCALSTORAGE_GET_ITEM_REQUEST,
-    LOCALSTORAGE_REMOVE_ITEM_REQUEST,
-    LOCALSTORAGE_SET_ITEM_REQUEST, requestLocalStorageSetItem,
-    succeededSignIn,
-    succeededSignUp,
-    succeedLocalStorageGetItem,
-    succeedLocalStorageRemoveItem, succeedLocalStorageSetItem
-} from "./auth";
-import {signInRequest, signUpRequest} from "../service/auth";
+    categoriesFail,
+    categoriesSucceed,
+} from "./categories";
+import {signInAsync, signUpAsync} from "../service/auth";
 import {customHistory} from "../index";
+import {
+    localStorageGetItemFail,
+    localStorageGetItemSucceed, localStorageRemoveItemFail,
+    localStorageRemoveItemSucceed, localStorageSetItemFail, localStorageSetItemRequest,
+    localStorageSetItemSucceed, signInFail, signInSucceed, signUpFail, signUpSucceed
+} from "./auth";
 
 function* mySagaWatcher() {
-    yield takeEvery(FETCHED_BOARD_REQUESTED, boardWorker);
-    yield takeEvery(FETCHED_ICONS_REQUESTED, iconsWorker);
-    yield takeEvery(FETCHED_CATEGORIES_REQUESTED, categoriesWorker);
-    yield takeEvery(FETCHED_SIGN_IN_REQUESTED, signInWorker);
-    yield takeEvery(FETCHED_SIGN_UP_REQUESTED, signUpWorker);
-    yield takeEvery(LOCALSTORAGE_GET_ITEM_REQUEST, localStorageGetItemWorker);
-    yield takeEvery(LOCALSTORAGE_SET_ITEM_REQUEST, localStorageSetItemWorker);
-    yield takeEvery(LOCALSTORAGE_REMOVE_ITEM_REQUEST, localStorageRemoveItemWorker);
+    yield takeEvery('BOARD_REQUEST', boardWorker);
+    yield takeEvery('ICONS_REQUEST', iconsWorker);
+    yield takeEvery('CATEGORIES_REQUEST', categoriesWorker);
+    yield takeEvery('SIGN_IN_REQUEST', signInWorker);
+    yield takeEvery('SIGN_UP_REQUEST', signUpWorker);
+    yield takeEvery('LOCALSTORAGE_GET_ITEM_REQUEST', localStorageGetItemWorker);
+    yield takeEvery('LOCALSTORAGE_SET_ITEM_REQUEST', localStorageSetItemWorker);
+    yield takeEvery('LOCALSTORAGE_REMOVE_ITEM_REQUEST', localStorageRemoveItemWorker);
 }
 
 // ---------LOCALSTORAGE-------------
@@ -38,27 +32,27 @@ function* mySagaWatcher() {
 function* localStorageGetItemWorker(action) {
     try {
         const data = yield call(() => localStorage.getItem(action.payload.key));
-        yield put(succeedLocalStorageGetItem(JSON.parse(data)));
+        yield put(localStorageGetItemSucceed(JSON.parse(data)));
     } catch (error) {
-        yield put(failLocalStorageGetItem(error.message));
+        yield put(localStorageGetItemFail(error.message));
     }
 }
 
 function* localStorageSetItemWorker(action) {
     try {
-        yield call(() => localStorage.setItem(action.payload.key, JSON.stringify(action.payload.data)));
-        yield put(succeedLocalStorageSetItem());
+        yield call(() => localStorage.setItem(action.payload.token, JSON.stringify(action.payload.data)));
+        yield put(localStorageSetItemSucceed());
     } catch (error) {
-        yield put(failLocalStorageSetItem(error.message));
+        yield put(localStorageSetItemFail(error.message));
     }
 }
 
 function* localStorageRemoveItemWorker(action) {
     try {
         yield call(() => localStorage.removeItem(action.payload.key));
-        yield put(succeedLocalStorageRemoveItem());
+        yield put(localStorageRemoveItemSucceed());
     } catch (error) {
-        yield put(failLocalStorageRemoveItem(error.message));
+        yield put(localStorageRemoveItemFail(error.message));
     }
 }
 
@@ -66,28 +60,28 @@ function* localStorageRemoveItemWorker(action) {
 
 function* iconsWorker() {
     try {
-        const json = yield call(() => dictionariesRequest('board-icons'));
-        yield put(succeededIcons(json));
+        const json = yield call(() => dictionariesAsync('board-icons'));
+        yield put(iconsSucceed(json));
     } catch (error) {
-        yield put(failedIcons(error.message));
+        yield put(iconsFail(error.message));
     }
 }
 
 function* categoriesWorker() {
     try {
-        const json = yield call(() => dictionariesRequest('categories'));
-        yield put(succeededCategories(json));
+        const json = yield call(() => dictionariesAsync('categories'));
+        yield put(categoriesSucceed(json));
     } catch (error) {
-        yield put(failedCategories(error.message));
+        yield put(categoriesFail(error.message));
     }
 }
 
 function* boardWorker() {
     try {
-        const json = yield call(boardGetRequest);
-        yield put(succeededBoard(json));
+        const json = yield call(boardGetAsync);
+        yield put(boardSucceed(json));
     } catch (error) {
-        yield put(failedBoard(error.message));
+        yield put(boardFail(error.message));
     }
 }
 
@@ -95,16 +89,12 @@ function* boardWorker() {
 
 function* signInWorker(action) {
     try {
-        const form = {
-            email: action.payload.email,
-            password: action.payload.password
-        }
-        const json = yield call(() => signInRequest(form));
-        yield put(requestLocalStorageSetItem('TOKEN', json));
+        const json = yield call(() => signInAsync(action.payload));
+        yield put(localStorageSetItemRequest({token: 'TOKEN', data: json}));
         yield customHistory.push('/dashboard');
-        yield put(succeededSignIn());
+        yield put(signInSucceed());
     } catch (error) {
-        yield put(failedSignIn(error.message));
+        yield put(signInFail(error.message));
     }
 }
 
@@ -114,13 +104,13 @@ function* signUpWorker(action) {
             name: action.payload.name,
             email: action.payload.email,
             password: action.payload.name,
-        }
-        const json = yield call(() => signUpRequest(form));
-        yield put(requestLocalStorageSetItem('TOKEN', json));
+        };
+        const json = yield call(() => signUpAsync(form));
+        yield put(localStorageSetItemRequest({token: 'TOKEN', data: json}));
         yield customHistory.push('/dashboard');
-        yield put(succeededSignUp());
+        yield put(signUpSucceed());
     } catch (error) {
-        yield put(failedSignUp(error.message));
+        yield put(signUpFail(error.message));
     }
 }
 

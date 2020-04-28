@@ -1,12 +1,10 @@
-import produce from "immer";
+import {createAction, createReducer} from "@reduxjs/toolkit";
 
-export const FETCHED_BOARD_REQUESTED = 'FETCHED_BOARD_REQUEST';
-export const FETCHED_BOARD_SUCCEEDED = 'FETCHED_BOARD_SUCCEEDED';
-export const FETCHED_BOARD_FAILED = 'FETCHED_BOARD_FAILED';
+//-----------CREATE_ACTIONS------------------
 
-export const requestedBoard = () => ({type: FETCHED_BOARD_REQUESTED});
-export const succeededBoard = (json) => ({type: FETCHED_BOARD_SUCCEEDED, payload: json});
-export const failedBoard = (error) => ({type: FETCHED_BOARD_FAILED, payload: error});
+export const boardRequest = createAction('BOARD_REQUEST');
+export const boardSucceed = createAction('BOARD_SUCCEED');
+export const boardFail = createAction('BOARD_FAIL');
 
 const INITIAL_STATE = {
     data: [],
@@ -14,21 +12,19 @@ const INITIAL_STATE = {
     error: ''
 };
 
-export default (state = INITIAL_STATE, action) => produce(state, draft => {
-    switch (action.type) {
-        case FETCHED_BOARD_REQUESTED:
-            draft.loader = true;
-            draft.error = '';
-            break;
-        case FETCHED_BOARD_SUCCEEDED:
-            draft.data = action.payload;
-            draft.loader = false;
-            break;
-        case FETCHED_BOARD_FAILED:
-            draft.error = action.payload;
-            draft.loader = false;
-            break;
-        default:
-            return state;
-    }
+//-----------CREATE_REDUCER------------------
+
+export default createReducer(INITIAL_STATE, {
+    [boardRequest]: (state) => {
+        state.loader = true;
+        state.error = '';
+    },
+    [boardSucceed]: (state, action) => {
+        state.loader = false;
+        state.data = action.payload;
+    },
+    [boardFail]: (state, action) => {
+        state.error = action.payload;
+        state.loader = false;
+    },
 });

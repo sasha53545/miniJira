@@ -1,12 +1,10 @@
-import produce from "immer";
+import {createAction, createReducer} from "@reduxjs/toolkit";
 
-export const FETCHED_CATEGORIES_REQUESTED = 'DICTIONARIES/FETCHED_CATEGORIES_REQUEST';
-export const FETCHED_CATEGORIES_SUCCEEDED = 'DICTIONARIES/FETCHED_CATEGORIES_SUCCEEDED';
-export const FETCHED_CATEGORIES_FAILED = 'DICTIONARIES/FETCHED_CATEGORIES_FAILED';
+//-----------CREATE_ACTIONS------------------
 
-export const requestedCategories = () => ({type: FETCHED_CATEGORIES_REQUESTED});
-export const succeededCategories = (json) => ({type: FETCHED_CATEGORIES_SUCCEEDED, payload: json});
-export const failedCategories = (error) => ({type: FETCHED_CATEGORIES_FAILED, payload: error});
+export const categoriesRequest = createAction('CATEGORIES_REQUEST');
+export const categoriesSucceed = createAction('CATEGORIES_SUCCEED');
+export const categoriesFail = createAction('CATEGORIES_FAIL');
 
 const INITIAL_STATE = {
     data: [],
@@ -14,21 +12,19 @@ const INITIAL_STATE = {
     error: ''
 };
 
-export default (state = INITIAL_STATE, action) => produce(state, draft => {
-    switch (action.type) {
-        case FETCHED_CATEGORIES_REQUESTED:
-            draft.loader = true;
-            draft.error = '';
-            break;
-        case FETCHED_CATEGORIES_SUCCEEDED:
-            draft.data = action.payload;
-            draft.loader = false;
-            break;
-        case FETCHED_CATEGORIES_FAILED:
-            draft.error = action.payload;
-            draft.loader = false;
-            break;
-        default:
-            return state;
-    }
+//-----------CREATE_REDUCER------------------
+
+export default createReducer(INITIAL_STATE, {
+    [categoriesRequest]: (state) => {
+        state.loader = true;
+        state.error = '';
+    },
+    [categoriesSucceed]: (state, action) => {
+        state.loader = false;
+        state.data = action.payload;
+    },
+    [categoriesFail]: (state, action) => {
+        state.error = action.payload;
+        state.loader = false;
+    },
 });

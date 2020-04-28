@@ -3,12 +3,18 @@ import css from "./SignIn.module.css";
 import {customHistory} from "../../index";
 import ErrorMessage from "../Errors/ErrorMessage/ErrorMessage";
 import ErrorValidation from "../Errors/ErrorValidation/ErrorValidation";
-import {googleAuth} from "../../service/auth";
+import {googleAuth, googleAuthAsync} from "../../service/auth";
 import {Preloader} from "../Preloader/Preloader";
 import {Footer} from "../Footer/Footer";
 import {facebookAuthIcon, googleAuthIcon} from "../../images/svg";
 import {useDispatch, useSelector} from "react-redux";
-import {authState, requestedSignIn, requestLocalStorageSetItem} from "../../reducers/auth";
+import {
+    authState,
+    localStorageSetItemRequest,
+    requestedSignIn,
+    requestLocalStorageSetItem,
+    signInRequest
+} from "../../reducers/auth";
 
 const SignIn = (props) => {
     const errorAuth = useSelector(state => state.auth.error);
@@ -36,9 +42,9 @@ const SignIn = (props) => {
             .then(googleUser => {
                 const id_token = googleUser.getAuthResponse().id_token;
                 // props.loader();
-                return googleAuth(id_token)
+                return googleAuthAsync(id_token)
                     .then(response => {
-                        requestLocalStorageSetItem('TOKEN', response);
+                        localStorageSetItemRequest('TOKEN', response);
                         dispatch(authState());
                         customHistory.push('/dashboard');
                     })
@@ -66,7 +72,7 @@ const SignIn = (props) => {
             return null;
         }
 
-        dispatch(requestedSignIn(form.email, form.password));
+        dispatch(signInRequest(form));
     };
 
     const validateForm = (form) => {
@@ -175,6 +181,6 @@ const SignIn = (props) => {
             }
         </div>
     );
-}
+};
 
 export default SignIn;
