@@ -8,17 +8,20 @@ import {Tasks} from "./components/Tasks/Tasks";
 import {useDispatch, useSelector} from "react-redux";
 import {authState, localStorageGetItemRequest} from "./reducers/auth";
 import {Redirect, Route, Switch} from "react-router-dom";
+import styled from "styled-components";
 
 const App = () => {
     const isAuth = useSelector(state => state.auth.authState);
+    const localStorageData = useSelector(state => state.auth.localstorage.data);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        const token = dispatch(localStorageGetItemRequest('TOKEN'));
-        if (token) {
+        dispatch(localStorageGetItemRequest({key: 'TOKEN'}));
+
+        if (localStorageData) {
             dispatch(authState());
         }
-    });
+    }, []);
 
     return (
         <div className={css.main}>
@@ -36,7 +39,6 @@ const App = () => {
                 <Redirect to='/signIn'/>
             </Switch>}
         </div>
-
     );
 };
 

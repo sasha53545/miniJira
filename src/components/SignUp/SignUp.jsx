@@ -6,7 +6,7 @@ import {Preloader} from "../Preloader/Preloader";
 import {Footer} from "../Footer/Footer";
 import {useDispatch, useSelector} from "react-redux";
 import ErrorMessage from "../Errors/ErrorMessage/ErrorMessage";
-import {requestedSignUp, signUpRequest} from "../../reducers/auth";
+import {signUpRequest} from "../../reducers/auth";
 
 const SignUp = () => {
     const errorAuth = useSelector(state => state.auth.error);

@@ -32,9 +32,9 @@ function* mySagaWatcher() {
 function* localStorageGetItemWorker(action) {
     try {
         const data = yield call(() => localStorage.getItem(action.payload.key));
-        yield put(localStorageGetItemSucceed(JSON.parse(data)));
+        yield put(localStorageGetItemSucceed({data: JSON.parse(data)}));
     } catch (error) {
-        yield put(localStorageGetItemFail(error.message));
+        yield put(localStorageGetItemFail({error: error.message}));
     }
 }
 

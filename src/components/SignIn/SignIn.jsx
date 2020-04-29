@@ -3,7 +3,7 @@ import css from "./SignIn.module.css";
 import {customHistory} from "../../index";
 import ErrorMessage from "../Errors/ErrorMessage/ErrorMessage";
 import ErrorValidation from "../Errors/ErrorValidation/ErrorValidation";
-import {googleAuth, googleAuthAsync} from "../../service/auth";
+import {googleAuthAsync} from "../../service/auth";
 import {Preloader} from "../Preloader/Preloader";
 import {Footer} from "../Footer/Footer";
 import {facebookAuthIcon, googleAuthIcon} from "../../images/svg";
@@ -11,8 +11,6 @@ import {useDispatch, useSelector} from "react-redux";
 import {
     authState,
     localStorageSetItemRequest,
-    requestedSignIn,
-    requestLocalStorageSetItem,
     signInRequest
 } from "../../reducers/auth";
 
@@ -45,7 +43,7 @@ const SignIn = (props) => {
                 return googleAuthAsync(id_token)
                     .then(response => {
                         localStorageSetItemRequest('TOKEN', response);
-                        dispatch(authState());
+                        dispatch(authState(true));
                         customHistory.push('/dashboard');
                     })
                     .catch(error => console.log(error.message))

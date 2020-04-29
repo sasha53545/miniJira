@@ -30,13 +30,18 @@ const INITIAL_STATE = {
     authState: false,
     localstorage: {
         key: '',
-        data: ''
+        data: null
     }
 };
 
 //-----------CREATE_REDUCER------------------
 
 export default createReducer(INITIAL_STATE, {
+    // ---------IS_AUTH-------------
+    [authState]: (state) => {
+        state.authState = !state.authState;
+    },
+
     // ---------SIGN_IN-------------
     [signInRequest]: (state) => {
         state.loader = true;
@@ -75,7 +80,7 @@ export default createReducer(INITIAL_STATE, {
         state.localstorage.data = action.payload.data;
     },
     [localStorageGetItemFail]: (state, action) => {
-        state.error = action.payload;
+        state.error = action.payload.error;
         state.loader = false;
     },
 
