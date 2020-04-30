@@ -48,8 +48,8 @@ export default createReducer(INITIAL_STATE, {
         state.error = '';
     },
     [signInSucceed]: (state) => {
-        state.loader = false;
         state.authState = true;
+        state.loader = false;
     },
     [signInFail]: (state, action) => {
         state.error = action.payload;
@@ -62,8 +62,8 @@ export default createReducer(INITIAL_STATE, {
         state.error = '';
     },
     [signUpSucceed]: (state) => {
-        state.loader = false;
         state.authState = true;
+        state.loader = false;
     },
     [signUpFail]: (state, action) => {
         state.error = action.payload;
@@ -76,8 +76,9 @@ export default createReducer(INITIAL_STATE, {
         state.error = '';
     },
     [localStorageGetItemSucceed]: (state, action) => {
-        state.loader = false;
         state.localstorage.data = action.payload.data;
+        state.authState = state.localstorage.data ? true : false;
+        state.loader = false;
     },
     [localStorageGetItemFail]: (state, action) => {
         state.error = action.payload.error;
@@ -103,100 +104,16 @@ export default createReducer(INITIAL_STATE, {
     },
 
     // ---------REMOVE_ITEM_LOCALSTORAGE-------------
-    [localStorageSetItemRequest]: (state, action) => {
+    [localStorageRemoveItemRequest]: (state) => {
         state.loader = true;
         state.error = '';
+    },
+    [localStorageRemoveItemSucceed]: (state) => {
         state.authState = false;
-        state.localstorage.key = action.payload.key;
-    },
-    [localStorageSetItemSucceed]: (state) => {
         state.loader = false;
-        state.localstorage.key = '';
     },
-    [localStorageSetItemFail]: (state, action) => {
+    [localStorageRemoveItemFail]: (state, action) => {
         state.error = action.payload;
         state.loader = false;
     },
 });
-
-// export default (state = INITIAL_STATE, action) => produce(state, draft => {
-    // switch (action.type) {
-    //     // ---------AUTH_STATE-------------
-    //     case AUTH_STATE:
-    //         draft.authState = !draft.authState;
-    //         break;
-        // // ---------SIGN_IN-------------
-        // case FETCHED_SIGN_IN_REQUESTED:
-        //     draft.loader = true;
-        //     draft.error = '';
-        //     break;
-        // case FETCHED_SIGN_IN_SUCCEEDED:
-        //     draft.loader = false;
-        //     draft.authState = true;
-        //     break;
-        // case FETCHED_SIGN_IN_FAILED:
-        //     draft.error = action.payload;
-        //     draft.loader = false;
-        //     break;
-        // // ---------SIGN_UP-------------
-        // case FETCHED_SIGN_UP_REQUESTED:
-        //     draft.loader = true;
-        //     draft.error = '';
-        //     break;
-        // case FETCHED_SIGN_UP_SUCCEEDED:
-        //     draft.loader = false;
-        //     draft.authState = true;
-        //     break;
-        // case FETCHED_SIGN_UP_FAILED:
-        //     draft.error = action.payload;
-        //     draft.loader = false;
-        //     break;
-        // ---------GET_ITEM_LOCALSTORAGE-------------
-    //     case LOCALSTORAGE_GET_ITEM_REQUEST:
-    //         draft.loader = true;
-    //         draft.error = '';
-    //         break;
-    //     case LOCALSTORAGE_GET_ITEM_SUCCEED:
-    //         draft.loader = false;
-    //         draft.localstorage.data = action.payload.data;
-    //         break;
-    //     case LOCALSTORAGE_GET_ITEM_FAIL:
-    //         draft.error = action.payload
-    //         draft.loader = false;
-    //         break;
-    //     // ---------SET_ITEM_LOCALSTORAGE-------------
-    //     case LOCALSTORAGE_SET_ITEM_REQUEST:
-    //         draft.loader = true;
-    //         draft.error = '';
-    //         draft.authState = true;
-    //         draft.localstorage.key = action.payload.key
-    //         draft.localstorage.data = action.payload.data
-    //         break;
-    //     case LOCALSTORAGE_SET_ITEM_SUCCEED:
-    //         draft.loader = false;
-    //         draft.localstorage.key = '';
-    //         draft.localstorage.data = '';
-    //         break;
-    //     case LOCALSTORAGE_SET_ITEM_FAIL:
-    //         draft.error = action.payload;
-    //         draft.loader = false;
-    //         break;
-    //     // ---------REMOVE_ITEM_LOCALSTORAGE-------------
-    //     case LOCALSTORAGE_REMOVE_ITEM_REQUEST:
-    //         draft.loader = true;
-    //         draft.error = '';
-    //         draft.authState = false;
-    //         draft.localstorage.key = action.payload.key;
-    //         break;
-    //     case LOCALSTORAGE_REMOVE_ITEM_SUCCEEDED:
-    //         draft.loader = false;
-    //         draft.localstorage.key = '';
-    //         break;
-    //     case LOCALSTORAGE_REMOVE_ITEM_FAILED:
-    //         draft.error = action.payload;
-    //         draft.loader = false;
-    //         break;
-    //     default:
-    //         return state;
-    // }
-// });

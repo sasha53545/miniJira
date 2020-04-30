@@ -6,21 +6,16 @@ import SignUp from "./components/SignUp/SignUp";
 import CreateBoard from "./components/CreateBoard/CreateBoard";
 import {Tasks} from "./components/Tasks/Tasks";
 import {useDispatch, useSelector} from "react-redux";
-import {authState, localStorageGetItemRequest} from "./reducers/auth";
+import {localStorageGetItemRequest} from "./reducers/auth";
 import {Redirect, Route, Switch} from "react-router-dom";
 import styled from "styled-components";
 
 const App = () => {
     const isAuth = useSelector(state => state.auth.authState);
-    const localStorageData = useSelector(state => state.auth.localstorage.data);
     const dispatch = useDispatch();
 
     useEffect(() => {
         dispatch(localStorageGetItemRequest({key: 'TOKEN'}));
-
-        if (localStorageData) {
-            dispatch(authState());
-        }
     }, []);
 
     return (

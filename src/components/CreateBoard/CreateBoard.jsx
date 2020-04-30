@@ -23,6 +23,8 @@ const CreateBoard = () => {
     const errorCategoriesAuth = useSelector(state => state.categories.error);
     const errorIconsAuth = useSelector(state => state.icons.error);
     const dataLocalstorage = useSelector(state => state.auth.localstorage.data);
+    const errorAuth = useSelector(state => state.auth.error);
+    const loaderAuth = useSelector(state => state.auth.loader);
     const dispatch = useDispatch();
 
     const [formPost, setFormPost] = useState({
@@ -79,18 +81,6 @@ const CreateBoard = () => {
         }
     };
 
-    const checkLifeToken = async (getToken) => {
-        if (getToken.accessTokenExpiresIn < Date.now()) {
-            try {
-                const response = await updateTokensAsync(getToken);
-                dispatch(localStorageRemoveItemRequest('TOKEN'));
-                dispatch(localStorageSetItemRequest({token: 'TOKEN', data: response}));
-            } catch (error) {
-                dispatch(localStorageRemoveItemRequest('TOKEN'));
-            }
-        }
-    };
-
     const onSubmit = (event) => {
         if (event) {
             event.preventDefault();
@@ -103,22 +93,15 @@ const CreateBoard = () => {
             return;
         }
 
-        dispatch(localStorageGetItemRequest('TOKEN'));
-        let getToken = dataLocalstorage;
-        // this.props.loaderAction();
-        checkLifeToken(getToken)
+        dispatch(localStorageGetItemRequest('TOKEN'))
             .then(() => {
-                return boardPostAsync(getToken, formPost);
+                return boardPostAsync(dataLocalstorage, formPost);
             })
             .then(() => {
                 customHistory.push('/dashboard');
             })
             .catch(error => {
-                if (error.message === "Validation error") {
-                    console.log(error.validation.key.messages[0]);
-                } else {
-                    console.log(error.message);
-                }
+                console.log(error.message);
             })
             .finally(() => {
                 // this.props.loaderAction();
@@ -175,7 +158,7 @@ const CreateBoard = () => {
                                 Back
                             </div>
                             <div onClick={() => {
-                                dispatch(localStorageRemoveItemRequest('TOKEN'));
+                                dispatch(localStorageRemoveItemRequest({key: 'TOKEN'}));
                             }}>
                                 Log Out
                             </div>

@@ -35,7 +35,7 @@ const Dashboard = () => {
                         </div>
                         <div className={css.header_nav}>
                             <div onClick={() => {
-                                dispatch(localStorageRemoveItemRequest('TOKEN'));
+                                dispatch(localStorageRemoveItemRequest({key: 'TOKEN'}));
                             }}>
                                 Log Out
                             </div>
@@ -124,7 +124,6 @@ const Dashboard = () => {
             }
         </div>
     );
-}
+};
 
 export default Dashboard;
-

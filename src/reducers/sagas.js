@@ -1,23 +1,24 @@
 import {call, put, takeEvery} from 'redux-saga/effects'
 import {dictionariesAsync} from "../service/dictionaries";
-import {boardGetAsync} from "../service/board";
+import {boardGetAsync, boardPostAsync} from "../service/board";
 import {boardFail, boardSucceed} from "./board";
 import {iconsFail, iconsSucceed} from "./icons";
 import {
     categoriesFail,
     categoriesSucceed,
 } from "./categories";
-import {signInAsync, signUpAsync} from "../service/auth";
+import {signInAsync, signUpAsync, updateTokensAsync} from "../service/auth";
 import {customHistory} from "../index";
 import {
     localStorageGetItemFail,
-    localStorageGetItemSucceed, localStorageRemoveItemFail,
+    localStorageGetItemSucceed, localStorageRemoveItemFail, localStorageRemoveItemRequest,
     localStorageRemoveItemSucceed, localStorageSetItemFail, localStorageSetItemRequest,
     localStorageSetItemSucceed, signInFail, signInSucceed, signUpFail, signUpSucceed
 } from "./auth";
 
 function* mySagaWatcher() {
-    yield takeEvery('BOARD_REQUEST', boardWorker);
+    yield takeEvery('BOARD_REQUEST', boardGetWorker);
+    yield takeEvery('BOARD_REQUEST', boardPostWorker);
     yield takeEvery('ICONS_REQUEST', iconsWorker);
     yield takeEvery('CATEGORIES_REQUEST', categoriesWorker);
     yield takeEvery('SIGN_IN_REQUEST', signInWorker);
@@ -31,8 +32,19 @@ function* mySagaWatcher() {
 
 function* localStorageGetItemWorker(action) {
     try {
-        const data = yield call(() => localStorage.getItem(action.payload.key));
-        yield put(localStorageGetItemSucceed({data: JSON.parse(data)}));
+        let data = yield call(() => localStorage.getItem(action.payload.key));
+        data = JSON.parse(data);
+        if (data && data.accessTokenExpiresIn < Date.now()) {
+            try {
+                const response = yield call(() => updateTokensAsync(data));
+                put(localStorageRemoveItemRequest({key: 'TOKEN'}));
+                put(localStorageSetItemRequest({token: 'TOKEN', data: response}));
+
+                yield put(localStorageGetItemSucceed({data: response}));
+            } catch (error) {
+                put(localStorageRemoveItemRequest('TOKEN'));
+            }
+        } else yield put(localStorageGetItemSucceed({data: data}));
     } catch (error) {
         yield put(localStorageGetItemFail({error: error.message}));
     }
@@ -56,7 +68,7 @@ function* localStorageRemoveItemWorker(action) {
     }
 }
 
-// ---------BOARD_CATEGORIES_ICONS-------------
+// ---------CATEGORIES_AND_ICONS-------------
 
 function* iconsWorker() {
     try {
@@ -76,9 +88,19 @@ function* categoriesWorker() {
     }
 }
 
-function* boardWorker() {
+// ---------BOARD-------------
+function* boardGetWorker() {
     try {
         const json = yield call(boardGetAsync);
+        yield put(boardSucceed(json));
+    } catch (error) {
+        yield put(boardFail(error.message));
+    }
+}
+
+function* boardPostWorker(action) {
+    try {
+        const json = yield call(boardPostAsync);
         yield put(boardSucceed(json));
     } catch (error) {
         yield put(boardFail(error.message));
