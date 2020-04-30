@@ -52,7 +52,7 @@ export default createReducer(INITIAL_STATE, {
         state.loader = false;
     },
     [signInFail]: (state, action) => {
-        state.error = action.payload;
+        state.error = action.payload.error;
         state.loader = false;
     },
 
@@ -66,7 +66,7 @@ export default createReducer(INITIAL_STATE, {
         state.loader = false;
     },
     [signUpFail]: (state, action) => {
-        state.error = action.payload;
+        state.error = action.payload.error;
         state.loader = false;
     },
 
@@ -99,7 +99,7 @@ export default createReducer(INITIAL_STATE, {
         state.localstorage.data = '';
     },
     [localStorageSetItemFail]: (state, action) => {
-        state.error = action.payload;
+        state.error = action.payload.error;
         state.loader = false;
     },
 
@@ -113,7 +113,7 @@ export default createReducer(INITIAL_STATE, {
         state.loader = false;
     },
     [localStorageRemoveItemFail]: (state, action) => {
-        state.error = action.payload;
+        state.error = action.payload.error;
         state.loader = false;
     },
 });

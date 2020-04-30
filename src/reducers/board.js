@@ -2,9 +2,13 @@ import {createAction, createReducer} from "@reduxjs/toolkit";
 
 //-----------CREATE_ACTIONS------------------
 
-export const boardRequest = createAction('BOARD_REQUEST');
-export const boardSucceed = createAction('BOARD_SUCCEED');
-export const boardFail = createAction('BOARD_FAIL');
+export const boardGetRequest = createAction('BOARD_GET_REQUEST');
+export const boardGetSucceed = createAction('BOARD_GET_SUCCEED');
+export const boardGetFail = createAction('BOARD_GET_FAIL');
+
+export const boardPostRequest = createAction('BOARD_POST_REQUEST');
+export const boardPostSucceed = createAction('BOARD_POST_SUCCEED');
+export const boardPostFail = createAction('BOARD_POST_FAIL');
 
 const INITIAL_STATE = {
     data: [],
@@ -15,16 +19,30 @@ const INITIAL_STATE = {
 //-----------CREATE_REDUCER------------------
 
 export default createReducer(INITIAL_STATE, {
-    [boardRequest]: (state) => {
+    // ---------BOARD_GET-------------
+    [boardGetRequest]: (state) => {
         state.loader = true;
         state.error = '';
     },
-    [boardSucceed]: (state, action) => {
+    [boardGetSucceed]: (state, action) => {
+        state.data = action.payload.board;
         state.loader = false;
-        state.data = action.payload;
     },
-    [boardFail]: (state, action) => {
-        state.error = action.payload;
+    [boardGetFail]: (state, action) => {
+        state.error = action.payload.error;
+        state.loader = false;
+    },
+
+    // ---------BOARD_POST-------------
+    [boardPostRequest]: (state) => {
+        state.loader = true;
+        state.error = '';
+    },
+    [boardPostSucceed]: (state) => {
+        state.loader = false;
+    },
+    [boardPostFail]: (state, action) => {
+        state.error = action.payload.error;
         state.loader = false;
     },
 });

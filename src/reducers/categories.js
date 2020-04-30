@@ -21,10 +21,10 @@ export default createReducer(INITIAL_STATE, {
     },
     [categoriesSucceed]: (state, action) => {
         state.loader = false;
-        state.data = action.payload;
+        state.data = action.payload.categories;
     },
     [categoriesFail]: (state, action) => {
-        state.error = action.payload;
+        state.error = action.payload.error;
         state.loader = false;
     },
 });

@@ -3,17 +3,15 @@ import css from './CreateBoard.module.css';
 import {customHistory} from "../../index";
 import ErrorMessage from "../Errors/ErrorMessage/ErrorMessage";
 import ErrorValidation from "../Errors/ErrorValidation/ErrorValidation";
-import {updateTokensAsync} from "../../service/auth";
-import {boardPostAsync} from "../../service/board";
 import {Preloader} from "../Preloader/Preloader";
 import {Footer} from "../Footer/Footer";
 import {useDispatch, useSelector} from "react-redux";
 import {
-    localStorageGetItemRequest,
-    localStorageRemoveItemRequest, localStorageSetItemRequest,
+    localStorageRemoveItemRequest,
 } from "../../reducers/auth";
 import {iconsRequest} from "../../reducers/icons";
 import {categoriesRequest} from "../../reducers/categories";
+import {boardPostRequest} from "../../reducers/board";
 
 const CreateBoard = () => {
     const categories = useSelector(state => state.categories.data);
@@ -22,9 +20,9 @@ const CreateBoard = () => {
     const loaderIcons = useSelector(state => state.icons.loader);
     const errorCategoriesAuth = useSelector(state => state.categories.error);
     const errorIconsAuth = useSelector(state => state.icons.error);
-    const dataLocalstorage = useSelector(state => state.auth.localstorage.data);
     const errorAuth = useSelector(state => state.auth.error);
-    const loaderAuth = useSelector(state => state.auth.loader);
+    const errorBoard = useSelector(state => state.board.error);
+    const dataLocalstorage = useSelector(state => state.auth.localstorage.data);
     const dispatch = useDispatch();
 
     const [formPost, setFormPost] = useState({
@@ -93,19 +91,7 @@ const CreateBoard = () => {
             return;
         }
 
-        dispatch(localStorageGetItemRequest('TOKEN'))
-            .then(() => {
-                return boardPostAsync(dataLocalstorage, formPost);
-            })
-            .then(() => {
-                customHistory.push('/dashboard');
-            })
-            .catch(error => {
-                console.log(error.message);
-            })
-            .finally(() => {
-                // this.props.loaderAction();
-            })
+        dispatch(boardPostRequest({token: dataLocalstorage, form: formPost}));
     };
 
     const validateForm = (formPost) => {
@@ -224,7 +210,7 @@ const CreateBoard = () => {
                                 </form>
                             </div>
                             <div className={css.error_message}>
-                                {(errorIconsAuth || errorCategoriesAuth) && <ErrorMessage/>}
+                                {(errorBoard || errorAuth || errorIconsAuth || errorCategoriesAuth) && <ErrorMessage/>}
                             </div>
                         </div>
                     </main>

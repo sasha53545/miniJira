@@ -1,5 +1,4 @@
 import React, {useEffect} from 'react';
-import css from './App.module.css'
 import Dashboard from "./components/Dashboard/Dashboard";
 import SignIn from "./components/SignIn/SignIn";
 import SignUp from "./components/SignUp/SignUp";
@@ -11,6 +10,8 @@ import {Redirect, Route, Switch} from "react-router-dom";
 import styled from "styled-components";
 
 const App = () => {
+
+
     const isAuth = useSelector(state => state.auth.authState);
     const dispatch = useDispatch();
 
@@ -19,7 +20,7 @@ const App = () => {
     }, []);
 
     return (
-        <div className={css.main}>
+        <div>
             {isAuth && <Switch>
                 <Route path='/dashboard' render={() => <Dashboard/>}/>
                 <Route path='/createBoard' render={() => <CreateBoard/>}/>
