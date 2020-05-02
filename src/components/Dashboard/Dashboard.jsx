@@ -9,19 +9,18 @@ import {boardGetRequest} from "../../reducers/board";
 import {localStorageRemoveItemRequest} from "../../reducers/auth";
 import styled, {keyframes} from "styled-components";
 
-const Dashboard = () => {
-    //----------STYLED_COMPONENTS-----------
-    //---------------------------------------animation--
-    const animate = keyframes`
-        from {
-        }
+//----------STYLED_COMPONENTS-----------
+//---------------------------------------animation--
+const animate = keyframes`
+    from {
+    }
 
-        to {
-            background-color: gainsboro;
-        }
+    to {
+        background-color: gainsboro;
+    }
 `;
-    //---------------------------------------header--
-    const Header = styled.div`
+//---------------------------------------header--
+const Header = styled.div`
     height: 70px;
     display: flex;
     flex-direction: row;
@@ -33,19 +32,19 @@ const Dashboard = () => {
     font-weight: 600;
 `;
 
-    const HeaderTitle = styled.div`
+const HeaderTitle = styled.div`
     cursor: default;
 `;
 
-    const HeaderNavigation = styled.div`
+const HeaderNavigation = styled.div`
     width: 150px;
     display: flex;
     justify-content: space-around;
     cursor: pointer;
     font-size: 1.2em;
 `;
-    //---------------------------------------body--
-    const Body = styled.div`
+//---------------------------------------body--
+const Body = styled.div`
     height: 86vh;
     display: flex;
     flex-direction: column;
@@ -53,11 +52,11 @@ const Dashboard = () => {
     align-items: center;
 `;
 
-    const BodyWrapper = styled(Body)`
+const BodyWrapper = styled(Body)`
     width: 60vw;
 `;
 
-    const Board = styled.div`
+const Board = styled.div`
     position: relative;
     display: flex;
     flex-direction: column;
@@ -70,15 +69,15 @@ const Dashboard = () => {
     box-shadow: 0 30px 15px -15px rgba(1, 1, 1, 0.5);
 `;
 
-    const BoardTable = styled.table`
+const BoardTable = styled.table`
     width: 100%;
 `;
 
-    const BoardTableHeadRow = styled.tr`
+const BoardTableHeadRow = styled.tr`
     height: 70px;
 `;
 
-    const BoardTableBodyRow = styled.tr`
+const BoardTableBodyRow = styled.tr`
     height: 60px;
     border-top: 1px gainsboro inset;
     
@@ -89,12 +88,12 @@ const Dashboard = () => {
     }
 `;
 
-    const Image = styled.img`
+const Image = styled.img`
     width: 25%;
     height: 40%;
 `;
 
-    const BoardButtons = styled.div`
+const BoardButtons = styled.div`
     position: absolute;
     bottom: 0;
     padding: 30px;
@@ -102,60 +101,78 @@ const Dashboard = () => {
     flex-direction: row;
     justify-content: space-between;
     width: 100%;
-    }
 `;
 
-    const Button = styled.button`
+const Button = styled.div`
     display: flex;
     align-items: center;
     width: 150px;
     height: 50px;
-    box-shadow: 0 5px 10px 2px rgba(0, 0, 0, 0.5);
+    position: relative;
     font-weight: 600;
+    text-transform: uppercase;
+  
+    &:hover {
+        background-position: 0 0;
+    }
 `;
 
-    const ButtonAddField = styled(Button)`
+const Rectangle = styled.rect`
+    stroke: #536DFE;
+    stroke-width: 2px;
+    transition: 0.8
+`;
+
+const SvgButton = styled.svg`
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 150px;
+    height: 50px;
+`;
+
+const ButtonAddField = styled(Button)`
     justify-content: center;
 `;
 
-    const TextNext = styled.div`
+const TextNext = styled.div`
     padding-left: 25px;
 `;
 
-    const TextPrevious = styled.div`
+const TextPrevious = styled.div`
     padding-right: 25px;
 `;
 
-    const SvgNext = styled.div`
+const SvgNext = styled.div`
     transform: rotate(180deg);
 `;
 
-    const SvgPrevious = styled.div`
+const SvgPrevious = styled.div`
 `;
 
-    const TdImage = styled.td`
+const TdImage = styled.td`
     text-align: center;
     width: 15%;
 `;
 
-    const ButtonPreviousNext = styled(Button)`
+const ButtonPreviousNext = styled(Button)`
     justify-content: space-between;
 `;
 
-    const ButtonPreviousNextWrapper = styled.div`
+const ButtonPreviousNextWrapper = styled.div`
     width: 350px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 `;
 
-    const ErrorWrapper = styled.div`
+const ErrorWrapper = styled.div`
     width: 100%;
     padding-top: 20px;
 `;
 
-    //---------------------------------------body--
-    const FooterWrap = styled.div`
+//---------------------------------------footer--
+const FooterWrap = styled.div`
     width: 100%;
     flex-direction: row;
     justify-content: center;
@@ -165,6 +182,7 @@ const Dashboard = () => {
     bottom: 0;
 `;
 
+const Dashboard = () => {
     const board = useSelector(state => state.board.data);
     const loader = useSelector(state => state.board.loader);
     const error = useSelector(state => state.board.error);
@@ -189,9 +207,7 @@ const Dashboard = () => {
                             <h1>MiniJira</h1>
                         </HeaderTitle>
                         <HeaderNavigation>
-                            <div onClick={() => {
-                                dispatch(localStorageRemoveItemRequest({key: 'TOKEN'}));
-                            }}>
+                            <div onClick={() => dispatch(localStorageRemoveItemRequest({key: 'TOKEN'}))}>
                                 Log Out
                             </div>
                         </HeaderNavigation>
@@ -211,12 +227,9 @@ const Dashboard = () => {
                                     </thead>
                                     <tbody>
                                     {board.slice(tablePage.page * tablePage.amount, (tablePage.page + 1) * tablePage.amount).map((item, i) => {
-                                        return <BoardTableBodyRow
-                                            key={i}
-                                            onClick={() => (customHistory.push('/tasks'))}>
-                                            <TdImage>
-                                                <Image src={item.icon.value}/>
-                                            </TdImage>
+                                        return <BoardTableBodyRow key={i}
+                                                                  onClick={() => (customHistory.push('/tasks'))}>
+                                            <TdImage><Image src={item.icon.value}/></TdImage>
                                             <td style={{width: '300px'}}>{item.title}</td>
                                             <td style={{width: '120px'}}>{item.owner.name}</td>
                                             <td style={{width: '100px'}}>{item.key}</td>
@@ -225,12 +238,12 @@ const Dashboard = () => {
                                     })}
                                     </tbody>
                                 </BoardTable>
-
                                 <BoardButtons>
-                                    <ButtonAddField onClick={() => {
-                                        customHistory.push('/createBoard');
-                                    }}>
+                                    <ButtonAddField onClick={() => customHistory.push('/createBoard')}>
                                         Add field
+                                        <SvgButton viewBox='0 0 150 50' xmlns='http://www.w3.org/2000/svg'>
+                                            <Rectangle x='0' y='0' fill='none' width='150' height='50'/>
+                                        </SvgButton>
                                     </ButtonAddField>
                                     <ButtonPreviousNextWrapper>
                                         <ButtonPreviousNext onClick={() => {
@@ -239,12 +252,8 @@ const Dashboard = () => {
                                                 page: Math.max(tablePage.page - 1, 0)
                                             })
                                         }}>
-                                            <SvgPrevious>
-                                                {nextPreviousIcon()}
-                                            </SvgPrevious>
-                                            <TextPrevious>
-                                                Previous
-                                            </TextPrevious>
+                                            <SvgPrevious>{nextPreviousIcon()}</SvgPrevious>
+                                            <TextPrevious>Previous</TextPrevious>
                                         </ButtonPreviousNext>
                                         <ButtonPreviousNext onClick={() => {
                                             setTablePage({
@@ -252,24 +261,16 @@ const Dashboard = () => {
                                                 page: Math.min(tablePage.page + 1, Math.floor(board.length / 5))
                                             })
                                         }}>
-                                            <TextNext>
-                                                Next
-                                            </TextNext>
-                                            <SvgNext>
-                                                {nextPreviousIcon()}
-                                            </SvgNext>
+                                            <TextNext>Next</TextNext>
+                                            <SvgNext>{nextPreviousIcon()}</SvgNext>
                                         </ButtonPreviousNext>
                                     </ButtonPreviousNextWrapper>
                                 </BoardButtons>
                             </Board>
-                            <ErrorWrapper>
-                                {error && <ErrorMessage/>}
-                            </ErrorWrapper>
+                            <ErrorWrapper>{error && <ErrorMessage/>}</ErrorWrapper>
                         </BodyWrapper>
                     </Body>
-                    <FooterWrap>
-                        <Footer/>
-                    </FooterWrap>
+                    <FooterWrap><Footer/></FooterWrap>
                 </div>
             }
         </div>
