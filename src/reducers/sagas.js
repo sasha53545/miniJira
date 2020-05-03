@@ -1,23 +1,24 @@
 import {call, put, takeEvery} from 'redux-saga/effects'
 import {dictionariesAsync} from "../service/dictionaries";
-import {boardGetAsync} from "../service/board";
-import {boardFail, boardSucceed} from "./board";
+import {boardGetAsync, boardPostAsync} from "../service/board";
+import {boardGetFail, boardGetSucceed, boardPostFail, boardPostSucceed} from "./board";
 import {iconsFail, iconsSucceed} from "./icons";
 import {
     categoriesFail,
     categoriesSucceed,
 } from "./categories";
-import {signInAsync, signUpAsync} from "../service/auth";
+import {signInAsync, signUpAsync, updateTokensAsync} from "../service/auth";
 import {customHistory} from "../index";
 import {
-    localStorageGetItemFail,
-    localStorageGetItemSucceed, localStorageRemoveItemFail,
+    localStorageGetItemFail, localStorageGetItemRequest,
+    localStorageGetItemSucceed, localStorageRemoveItemFail, localStorageRemoveItemRequest,
     localStorageRemoveItemSucceed, localStorageSetItemFail, localStorageSetItemRequest,
     localStorageSetItemSucceed, signInFail, signInSucceed, signUpFail, signUpSucceed
 } from "./auth";
 
 function* mySagaWatcher() {
-    yield takeEvery('BOARD_REQUEST', boardWorker);
+    yield takeEvery('BOARD_GET_REQUEST', boardGetWorker);
+    yield takeEvery('BOARD_POST_REQUEST', boardPostWorker);
     yield takeEvery('ICONS_REQUEST', iconsWorker);
     yield takeEvery('CATEGORIES_REQUEST', categoriesWorker);
     yield takeEvery('SIGN_IN_REQUEST', signInWorker);
@@ -28,65 +29,92 @@ function* mySagaWatcher() {
 }
 
 // ---------LOCALSTORAGE-------------
-
+//----------------------------get_item-----
 function* localStorageGetItemWorker(action) {
     try {
-        const data = yield call(() => localStorage.getItem(action.payload.key));
-        yield put(localStorageGetItemSucceed({data: JSON.parse(data)}));
+        let data = yield call(() => localStorage.getItem(action.payload.key));
+        data = JSON.parse(data);
+        if (data && data.accessTokenExpiresIn < Date.now()) {
+            try {
+                const response = yield call(() => updateTokensAsync(data));
+                put(localStorageRemoveItemRequest({key: 'TOKEN'}));
+                put(localStorageSetItemRequest({token: 'TOKEN', data: response}));
+
+                yield put(localStorageGetItemSucceed({data: response}));
+            } catch (error) {
+                put(localStorageRemoveItemRequest({key: 'TOKEN'}));
+            }
+        } else yield put(localStorageGetItemSucceed({data: data}));
     } catch (error) {
         yield put(localStorageGetItemFail({error: error.message}));
     }
 }
 
+//----------------------------set_item-----
 function* localStorageSetItemWorker(action) {
     try {
         yield call(() => localStorage.setItem(action.payload.token, JSON.stringify(action.payload.data)));
         yield put(localStorageSetItemSucceed());
     } catch (error) {
-        yield put(localStorageSetItemFail(error.message));
+        yield put(localStorageSetItemFail({error: error.message}));
     }
 }
 
+//----------------------------remove_item-----
 function* localStorageRemoveItemWorker(action) {
     try {
         yield call(() => localStorage.removeItem(action.payload.key));
         yield put(localStorageRemoveItemSucceed());
     } catch (error) {
-        yield put(localStorageRemoveItemFail(error.message));
+        yield put(localStorageRemoveItemFail({error: error.message}));
     }
 }
 
-// ---------BOARD_CATEGORIES_ICONS-------------
-
+// ---------CATEGORIES------------
 function* iconsWorker() {
     try {
         const json = yield call(() => dictionariesAsync('board-icons'));
-        yield put(iconsSucceed(json));
+        yield put(iconsSucceed({icons: json}));
     } catch (error) {
-        yield put(iconsFail(error.message));
+        yield put(iconsFail({error: error.message}));
     }
 }
 
+// ---------ICONS------------
 function* categoriesWorker() {
     try {
         const json = yield call(() => dictionariesAsync('categories'));
-        yield put(categoriesSucceed(json));
+        yield put(categoriesSucceed({categories: json}));
     } catch (error) {
-        yield put(categoriesFail(error.message));
+        yield put(categoriesFail({error: error.message}));
     }
 }
 
-function* boardWorker() {
+// ---------BOARD-------------
+//----------------------------board_get-----
+function* boardGetWorker() {
     try {
         const json = yield call(boardGetAsync);
-        yield put(boardSucceed(json));
+        yield put(boardGetSucceed({board: json}));
     } catch (error) {
-        yield put(boardFail(error.message));
+        yield put(boardGetFail({error: error.message}));
+    }
+}
+
+//----------------------------board_post-----
+function* boardPostWorker(action) {
+    try {
+        yield put(localStorageGetItemRequest({key: 'TOKEN'}));
+        yield call(() => boardPostAsync(action.payload.token, action.payload.form));
+        yield customHistory.push('/dashboard');
+        yield put(boardPostSucceed());
+    } catch (error) {
+        yield put(boardPostFail({error: error.message}));
     }
 }
 
 // ---------AUTH-------------
-
+//----------------------------sign_in-----
 function* signInWorker(action) {
     try {
         const json = yield call(() => signInAsync(action.payload));
@@ -94,10 +122,11 @@ function* signInWorker(action) {
         yield customHistory.push('/dashboard');
         yield put(signInSucceed());
     } catch (error) {
-        yield put(signInFail(error.message));
+        yield put(signInFail({error: error.message}));
     }
 }
 
+//----------------------------sign_up-----
 function* signUpWorker(action) {
     try {
         const form = {
@@ -110,7 +139,7 @@ function* signUpWorker(action) {
         yield customHistory.push('/dashboard');
         yield put(signUpSucceed());
     } catch (error) {
-        yield put(signUpFail(error.message));
+        yield put(signUpFail({error: error.message}));
     }
 }
 

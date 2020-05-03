@@ -43,7 +43,7 @@ const SignIn = (props) => {
                 return googleAuthAsync(id_token)
                     .then(response => {
                         localStorageSetItemRequest('TOKEN', response);
-                        dispatch(authState(true));
+                        dispatch(authState());
                         customHistory.push('/dashboard');
                     })
                     .catch(error => console.log(error.message))

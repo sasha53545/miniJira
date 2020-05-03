@@ -1,13 +1,186 @@
 import React, {useEffect, useState} from "react";
-import css from "./Dashboard.module.css";
 import {customHistory} from "../../index";
 import ErrorMessage from "../Errors/ErrorMessage/ErrorMessage";
 import {Preloader} from "../Preloader/Preloader";
 import {Footer} from "../Footer/Footer";
 import {nextPreviousIcon} from "../../images/svg";
 import {useDispatch, useSelector} from "react-redux";
-import {boardRequest} from "../../reducers/board";
+import {boardGetRequest} from "../../reducers/board";
 import {localStorageRemoveItemRequest} from "../../reducers/auth";
+import styled, {keyframes} from "styled-components";
+
+//----------STYLED_COMPONENTS-----------
+//---------------------------------------animation--
+const animate = keyframes`
+    from {
+    }
+
+    to {
+        background-color: gainsboro;
+    }
+`;
+//---------------------------------------header--
+const Header = styled.div`
+    height: 70px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px 0 20px;
+    background-color: #9e9e9e;
+    box-shadow: 0 15px 30px 4px rgba(0, 0, 0, 0.5);
+    font-weight: 600;
+`;
+
+const HeaderTitle = styled.div`
+    cursor: default;
+`;
+
+const HeaderNavigation = styled.div`
+    width: 150px;
+    display: flex;
+    justify-content: space-around;
+    cursor: pointer;
+    font-size: 1.2em;
+`;
+//---------------------------------------body--
+const Body = styled.div`
+    height: 86vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+`;
+
+const BodyWrapper = styled(Body)`
+    width: 60vw;
+`;
+
+const Board = styled.div`
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 500px;
+    border-left: 2px gray solid;
+    border-right: 2px gray solid;
+    border-top: 2px gray solid;
+    box-shadow: 0 30px 15px -15px rgba(1, 1, 1, 0.5);
+`;
+
+const BoardTable = styled.table`
+    width: 100%;
+`;
+
+const BoardTableHeadRow = styled.tr`
+    height: 70px;
+`;
+
+const BoardTableBodyRow = styled.tr`
+    height: 60px;
+    border-top: 1px gainsboro inset;
+    
+    &:hover {
+    cursor: pointer;
+    animation: ${animate} .6s ease-in-out;
+    animation-fill-mode: forwards;
+    }
+`;
+
+const Image = styled.img`
+    width: 25%;
+    height: 40%;
+`;
+
+const BoardButtons = styled.div`
+    position: absolute;
+    bottom: 0;
+    padding: 30px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+`;
+
+const Button = styled.div`
+    display: flex;
+    align-items: center;
+    width: 150px;
+    height: 50px;
+    position: relative;
+    font-weight: 600;
+    text-transform: uppercase;
+  
+    &:hover {
+        background-position: 0 0;
+    }
+`;
+
+const Rectangle = styled.rect`
+    stroke: #536DFE;
+    stroke-width: 2px;
+    transition: 0.8
+`;
+
+const SvgButton = styled.svg`
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 150px;
+    height: 50px;
+`;
+
+const ButtonAddField = styled(Button)`
+    justify-content: center;
+`;
+
+const TextNext = styled.div`
+    padding-left: 25px;
+`;
+
+const TextPrevious = styled.div`
+    padding-right: 25px;
+`;
+
+const SvgNext = styled.div`
+    transform: rotate(180deg);
+`;
+
+const SvgPrevious = styled.div`
+`;
+
+const TdImage = styled.td`
+    text-align: center;
+    width: 15%;
+`;
+
+const ButtonPreviousNext = styled(Button)`
+    justify-content: space-between;
+`;
+
+const ButtonPreviousNextWrapper = styled.div`
+    width: 350px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+`;
+
+const ErrorWrapper = styled.div`
+    width: 100%;
+    padding-top: 20px;
+`;
+
+//---------------------------------------footer--
+const FooterWrap = styled.div`
+    width: 100%;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: absolute;
+    bottom: 0;
+`;
 
 const Dashboard = () => {
     const board = useSelector(state => state.board.data);
@@ -21,110 +194,87 @@ const Dashboard = () => {
     });
 
     useEffect(() => {
-        dispatch(boardRequest());
-    }, [boardRequest]);
+        dispatch(boardGetRequest());
+    }, [boardGetRequest]);
 
     return (
         <div>
             {(loader === true) ?
                 <Preloader/> :
                 <div>
-                    <header className={css.header}>
-                        <div className={css.header_title}>
+                    <Header>
+                        <HeaderTitle>
                             <h1>MiniJira</h1>
-                        </div>
-                        <div className={css.header_nav}>
-                            <div onClick={() => {
-                                dispatch(localStorageRemoveItemRequest('TOKEN'));
-                            }}>
+                        </HeaderTitle>
+                        <HeaderNavigation>
+                            <div onClick={() => dispatch(localStorageRemoveItemRequest({key: 'TOKEN'}))}>
                                 Log Out
                             </div>
-                        </div>
-                    </header>
-                    <main className={css.main}>
-                        <div className={css.content}>
-                            <div className={css.buttons_and_table}>
-                                <table className={css.table}>
+                        </HeaderNavigation>
+                    </Header>
+                    <Body>
+                        <BodyWrapper>
+                            <Board>
+                                <BoardTable>
                                     <thead>
-                                    <tr className={css.tr_head}>
+                                    <BoardTableHeadRow>
                                         <th></th>
                                         <th>Title</th>
                                         <th>Owner</th>
                                         <th>Key</th>
                                         <th>Category</th>
-                                    </tr>
+                                    </BoardTableHeadRow>
                                     </thead>
                                     <tbody>
                                     {board.slice(tablePage.page * tablePage.amount, (tablePage.page + 1) * tablePage.amount).map((item, i) => {
-                                        return <tr className={css.tr_body}
-                                                   key={i}
-                                                   onClick={() => (customHistory.push('/tasks'))}>
-                                            <td className={css.td_img}>
-                                                <img className={css.img} src={item.icon.value}/>
-                                            </td>
+                                        return <BoardTableBodyRow key={i}
+                                                                  onClick={() => (customHistory.push('/tasks'))}>
+                                            <TdImage><Image src={item.icon.value}/></TdImage>
                                             <td style={{width: '300px'}}>{item.title}</td>
                                             <td style={{width: '120px'}}>{item.owner.name}</td>
                                             <td style={{width: '100px'}}>{item.key}</td>
                                             <td style={{width: '200px'}}>{item.category.value}</td>
-                                        </tr>
-
+                                        </BoardTableBodyRow>
                                     })}
                                     </tbody>
-                                </table>
-
-                                <div className={css.buttons}>
-                                    <div>
-                                        <button className={css.btn + ' ' + css.add_field} onClick={() => {
-                                            customHistory.push('/createBoard')
+                                </BoardTable>
+                                <BoardButtons>
+                                    <ButtonAddField onClick={() => customHistory.push('/createBoard')}>
+                                        Add field
+                                        <SvgButton viewBox='0 0 150 50' xmlns='http://www.w3.org/2000/svg'>
+                                            <Rectangle x='0' y='0' fill='none' width='150' height='50'/>
+                                        </SvgButton>
+                                    </ButtonAddField>
+                                    <ButtonPreviousNextWrapper>
+                                        <ButtonPreviousNext onClick={() => {
+                                            setTablePage({
+                                                ...tablePage,
+                                                page: Math.max(tablePage.page - 1, 0)
+                                            })
                                         }}>
-                                            Add field
-                                        </button>
-                                    </div>
-                                    <div className={css.previous_next}>
-                                        <button className={css.btn + ' ' + css.btn_prev_next + ' ' + css.btn_prev}
-                                                onClick={() => {
-                                                    setTablePage({
-                                                        ...tablePage,
-                                                        page: Math.max(tablePage.page - 1, 0)
-                                                    })
-                                                }}>
-                                            <div>
-                                                {nextPreviousIcon()}
-                                            </div>
-                                            <div className={css.prev_text}>
-                                                Previous
-                                            </div>
-                                        </button>
-                                        <button className={css.btn + ' ' + css.btn_prev_next + ' ' + css.btn_next}
-                                                onClick={() => {
-                                                    setTablePage({
-                                                        ...tablePage,
-                                                        page: Math.min(tablePage.page + 1, Math.floor(board.length / 5))
-                                                    })
-                                                }}>
-                                            <div className={css.next_text}>
-                                                Next
-                                            </div>
-                                            <div className={css.svg_next}>
-                                                {nextPreviousIcon()}
-                                            </div>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className={css.error_message}>
-                                {error && <ErrorMessage/>}
-                            </div>
-                        </div>
-                    </main>
-                    <footer className={css.footer}>
-                        <Footer/>
-                    </footer>
+                                            <SvgPrevious>{nextPreviousIcon()}</SvgPrevious>
+                                            <TextPrevious>Previous</TextPrevious>
+                                        </ButtonPreviousNext>
+                                        <ButtonPreviousNext onClick={() => {
+                                            setTablePage({
+                                                ...tablePage,
+                                                page: Math.min(tablePage.page + 1, Math.floor(board.length / 5))
+                                            })
+                                        }}>
+                                            <TextNext>Next</TextNext>
+                                            <SvgNext>{nextPreviousIcon()}</SvgNext>
+                                        </ButtonPreviousNext>
+                                    </ButtonPreviousNextWrapper>
+                                </BoardButtons>
+                            </Board>
+                            <ErrorWrapper>{error && <ErrorMessage/>}</ErrorWrapper>
+                        </BodyWrapper>
+                    </Body>
+                    <FooterWrap><Footer/></FooterWrap>
                 </div>
             }
         </div>
     );
-}
+};
 
 export default Dashboard;
-
