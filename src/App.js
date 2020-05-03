@@ -8,7 +8,6 @@ import {Tasks} from "./components/Tasks/Tasks";
 import {useDispatch, useSelector} from "react-redux";
 import {authState, localStorageGetItemRequest} from "./reducers/auth";
 import {Redirect, Route, Switch} from "react-router-dom";
-import styled from "styled-components";
 
 const App = () => {
     const isAuth = useSelector(state => state.auth.authState);
@@ -17,12 +16,11 @@ const App = () => {
 
     useEffect(() => {
         dispatch(localStorageGetItemRequest({key: 'TOKEN'}));
-
         if (localStorageData) {
             dispatch(authState());
         }
-    }, []);
-
+    }, [localStorageData]);
+    console.log('isauth', isAuth)
     return (
         <div className={css.main}>
             {isAuth && <Switch>
