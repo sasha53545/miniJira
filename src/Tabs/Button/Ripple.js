@@ -1,25 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from "styled-components";
-import moduleCss from './RippleAnimate.module.css';
-
-const RippleWrapper = styled.div`
-    position: absolute;
-    pointer-events: none;
-    top: 50%;
-    left: 50%;
-    height: 8em;
-    width: 8em;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateX(-50%) translateY(-50%) scale(0.4);
-    /* match durations with Ripple.js's DURATION */
-    transition: transform 0.23s, background 0.23s;
-`;
+import './Ripple.css';
 
 const DURATION = 230;
 
-class RippleAnimate extends React.Component {
+class Ripple extends React.Component {
     static propTypes = {
         onRequestRemove: PropTypes.func.isRequired,
     };
@@ -45,10 +30,10 @@ class RippleAnimate extends React.Component {
         let className = `Ripple`;
 
         if (this.state.in) {
-            className = `${className} ${moduleCss.RippleIn}`;
+            className = `${className} Ripple--in`;
         }
         if (this.state.out) {
-            className = `${className} ${moduleCss.RippleOut}`;
+            className = `${className} Ripple--out`;
         }
 
         const style = {};
@@ -56,9 +41,9 @@ class RippleAnimate extends React.Component {
         if (this.props.top) style.top = this.props.top;
 
         return (
-            <RippleWrapper className={className} style={style} />
+            <div className={className} style={style} />
         );
     }
 }
 
-export default RippleAnimate;
+export default Ripple;

@@ -1,24 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import RippleAnimate from "./RippleAnimate";
-import styled from "styled-components";
-
-const ButtonWrapper = styled.div`
-    width: 400px;
-    height: 400px
-    display: inline-block;
-    position: relative;
-    cursor: pointer;
-    padding: 1em;
-    overflow: hidden;
-    background: #ec407a;
-    color: white;
-    user-select: none;
-    
-    :hover {
-        background: #f06292;
-    }
-`;
+import Ripple from './Ripple';
+import './Button.css';
 
 class Button extends React.Component {
     static propTypes = {
@@ -32,7 +15,7 @@ class Button extends React.Component {
 
     render() {
         return (
-            <ButtonWrapper
+            <div
                 className="Button"
                 {...this.props}
                 onClick={(e) => {
@@ -46,7 +29,7 @@ class Button extends React.Component {
             >
                 {this.props.children}
                 {this.state.ripples.map(({left, top, id}) =>
-                    <RippleAnimate
+                    <Ripple
                         left={`${left}px`}
                         top={`${top}px`}
                         key={id}
@@ -57,7 +40,7 @@ class Button extends React.Component {
                         }}
                     />
                 )}
-            </ButtonWrapper>
+            </div>
         );
     }
 }

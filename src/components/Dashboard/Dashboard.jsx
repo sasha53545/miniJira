@@ -293,7 +293,7 @@ const Dashboard = () => {
                                     </tbody>
                                 </BoardTable>
                                 <BoardButtons>
-                                    <ButtonJS onClick={() => {
+                                    <ButtonJS children={coord.x} onClick={() => {
                                         setCoord({x: coord.x + 1});
                                     }}/>
                                     <ButtonAddField onClick={() => customHistory.push('/createBoard')}>
