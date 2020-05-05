@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from "styled-components";
-import RippleAnimate from './RippleAnimate.css';
+import moduleCss from './RippleAnimate.module.css';
 
 const RippleWrapper = styled.div`
     position: absolute;
@@ -45,10 +45,10 @@ class RippleAnimate extends React.Component {
         let className = `Ripple`;
 
         if (this.state.in) {
-            className = `${className} Ripple--in`;
+            className = `${className} ${moduleCss.RippleIn}`;
         }
         if (this.state.out) {
-            className = `${className} Ripple--out`;
+            className = `${className} ${moduleCss.RippleOut}`;
         }
 
         const style = {};
