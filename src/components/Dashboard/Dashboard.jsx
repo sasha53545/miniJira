@@ -8,6 +8,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {boardGetRequest} from "../../reducers/board";
 import {localStorageRemoveItemRequest} from "../../reducers/auth";
 import styled, {keyframes} from "styled-components";
+import ButtonJS from './../../Tabs/Button/Button';
 
 //----------STYLED_COMPONENTS-----------
 //---------------------------------------animation--
@@ -16,9 +17,37 @@ const animate = keyframes`
     }
 
     to {
-        background-color: gainsboro;
+        background-color: #43a047;
+        color: white;
     }
 `;
+
+export const animateHoverButtons = keyframes`
+    from {
+    }
+
+    to {
+        fill: white;
+        box-shadow: 0 0 10px #43a047, 0 0 40px #43a047, 0 0 80px #43a047;
+        background-color: #43a047;
+        color: white;
+    }
+`;
+
+export const animateRipple = keyframes`
+    0% 
+    {
+        width: 0px;
+        height: 0px;
+    }
+    100%
+    {
+    width: 500px;
+    height: 500px;
+    opacity: 0;
+    }
+`;
+
 //---------------------------------------header--
 const Header = styled.div`
     height: 70px;
@@ -103,7 +132,7 @@ const BoardButtons = styled.div`
     width: 100%;
 `;
 
-const Button = styled.div`
+export const Button = styled.div`
     display: flex;
     align-items: center;
     width: 150px;
@@ -111,16 +140,40 @@ const Button = styled.div`
     position: relative;
     font-weight: 600;
     text-transform: uppercase;
-  
-    &:hover {
-        background-position: 0 0;
+    cursor: pointer;
+    
+    :hover {
+        animation: ${animateHoverButtons} .6s ease-in-out 0.6s;
+        animation-fill-mode: forwards;
     }
 `;
 
+const ButtonAddField = styled(Button)`
+    justify-content: center;
+`;
+
 const Rectangle = styled.rect`
-    stroke: #536DFE;
-    stroke-width: 2px;
-    transition: 0.8
+    stroke: black;
+    stroke-width: 3px;
+    stroke-dasharray: 400, 0;
+    transition: 1s;
+    
+    ${Button}:hover & {
+        stroke: #43a047;
+        stroke-width: 6px;
+        stroke-dasharray: 35, 260;
+        stroke-dashoffset: 38;
+    }
+    
+`;
+
+const RippleHelper = styled.span`
+    position; absolute;
+    background: #fff;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    border-radius: 50%;
+    animation: animate 1s linear infinite;
 `;
 
 const SvgButton = styled.svg`
@@ -131,10 +184,6 @@ const SvgButton = styled.svg`
     height: 50px;
 `;
 
-const ButtonAddField = styled(Button)`
-    justify-content: center;
-`;
-
 const TextNext = styled.div`
     padding-left: 25px;
 `;
@@ -143,11 +192,15 @@ const TextPrevious = styled.div`
     padding-right: 25px;
 `;
 
-const SvgNext = styled.div`
+const SvgNextWrapper = styled.div`
     transform: rotate(180deg);
 `;
 
-const SvgPrevious = styled.div`
+const SvgPreviousWrapper = styled.div`
+    :hover {
+        animation: ${animateHoverButtons} .6s ease-in-out 0.6s;
+        animation-fill-mode: forwards;
+    }
 `;
 
 const TdImage = styled.td`
@@ -192,6 +245,7 @@ const Dashboard = () => {
         page: 0,
         amount: 5
     });
+    const [coord, setCoord] = useState({x: 0});
 
     useEffect(() => {
         dispatch(boardGetRequest());
@@ -239,10 +293,13 @@ const Dashboard = () => {
                                     </tbody>
                                 </BoardTable>
                                 <BoardButtons>
+                                    <ButtonJS onClick={() => {
+                                        setCoord({x: coord.x + 1});
+                                    }}/>
                                     <ButtonAddField onClick={() => customHistory.push('/createBoard')}>
                                         Add field
-                                        <SvgButton viewBox='0 0 150 50' xmlns='http://www.w3.org/2000/svg'>
-                                            <Rectangle x='0' y='0' fill='none' width='150' height='50'/>
+                                        <SvgButton className='svg' viewBox='0 0 150 50' xmlns='http://www.w3.org/2000/svg'>
+                                            <Rectangle className='rectangle' x='0' y='0' fill='none' width='150' height='50'/>
                                         </SvgButton>
                                     </ButtonAddField>
                                     <ButtonPreviousNextWrapper>
@@ -252,8 +309,11 @@ const Dashboard = () => {
                                                 page: Math.max(tablePage.page - 1, 0)
                                             })
                                         }}>
-                                            <SvgPrevious>{nextPreviousIcon()}</SvgPrevious>
+                                            <SvgPreviousWrapper>{nextPreviousIcon()}</SvgPreviousWrapper>
                                             <TextPrevious>Previous</TextPrevious>
+                                            <SvgButton className='svg' viewBox='0 0 150 50' xmlns='http://www.w3.org/2000/svg'>
+                                                <Rectangle className='rectangle' x='0' y='0' fill='none' width='150' height='50'/>
+                                            </SvgButton>
                                         </ButtonPreviousNext>
                                         <ButtonPreviousNext onClick={() => {
                                             setTablePage({
@@ -262,7 +322,10 @@ const Dashboard = () => {
                                             })
                                         }}>
                                             <TextNext>Next</TextNext>
-                                            <SvgNext>{nextPreviousIcon()}</SvgNext>
+                                            <SvgNextWrapper>{nextPreviousIcon()}</SvgNextWrapper>
+                                            <SvgButton className='svg' viewBox='0 0 150 50' xmlns='http://www.w3.org/2000/svg'>
+                                                <Rectangle className='rectangle' x='0' y='0' fill='none' width='150' height='50'/>
+                                            </SvgButton>
                                         </ButtonPreviousNext>
                                     </ButtonPreviousNextWrapper>
                                 </BoardButtons>

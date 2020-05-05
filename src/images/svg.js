@@ -1,8 +1,18 @@
 import React from "react";
+import styled from "styled-components";
+import Button from "./../components/Dashboard/Dashboard";
+import animateHoverButtons from "./../components/Dashboard/Dashboard";
+
+const SvgPreviousNext = styled.svg`
+    ${Button}:hover & {
+        animation: ${animateHoverButtons} .6s ease-in-out 0.6s;
+        animation-fill-mode: forwards;
+    }
+`;
 
 export const nextPreviousIcon = () => {
     return (
-        <svg
+        <SvgPreviousNext
             xmlns="http://www.w3.org/2000/svg"
             width="30.966"
             height="30.967"
@@ -14,7 +24,7 @@ export const nextPreviousIcon = () => {
         >
             <path
                 d="M245.454 396.017L617.077 56.579c12.973-12.94 12.973-33.934 0-46.874-12.973-12.94-34.033-12.94-47.006 0L174.615 370.896c-6.932 6.899-9.87 16.076-9.408 25.087-.462 9.045 2.476 18.188 9.408 25.088l395.456 361.19c12.973 12.94 34.033 12.94 47.006 0 12.973-12.939 12.973-33.934 0-46.873L245.454 396.017z"></path>
-        </svg>
+        </SvgPreviousNext>
     );
 };
 
