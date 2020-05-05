@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Ripple from "./Ripple";
+import RippleAnimate from "./RippleAnimate";
 import styled from "styled-components";
 
 const ButtonWrapper = styled.div`
@@ -46,7 +46,7 @@ class Button extends React.Component {
             >
                 {this.props.children}
                 {this.state.ripples.map(({left, top, id}) =>
-                    <Ripple
+                    <RippleAnimate
                         left={`${left}px`}
                         top={`${top}px`}
                         key={id}

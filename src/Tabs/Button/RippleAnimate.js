@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from "styled-components";
-import Ripple from './Ripple.css';
+import RippleAnimate from './RippleAnimate.css';
 
 const RippleWrapper = styled.div`
     position: absolute;
@@ -19,7 +19,7 @@ const RippleWrapper = styled.div`
 
 const DURATION = 230;
 
-class Ripple extends React.Component {
+class RippleAnimate extends React.Component {
     static propTypes = {
         onRequestRemove: PropTypes.func.isRequired,
     };
@@ -61,4 +61,4 @@ class Ripple extends React.Component {
     }
 }
 
-export default Ripple;
+export default RippleAnimate;
