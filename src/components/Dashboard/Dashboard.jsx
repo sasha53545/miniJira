@@ -293,9 +293,6 @@ const Dashboard = () => {
                                     </tbody>
                                 </BoardTable>
                                 <BoardButtons>
-                                    <ButtonJS children={coord.x} onClick={() => {
-                                        setCoord({x: coord.x + 1});
-                                    }}/>
                                     <ButtonAddField onClick={() => customHistory.push('/createBoard')}>
                                         Add field
                                         <SvgButton className='svg' viewBox='0 0 150 50' xmlns='http://www.w3.org/2000/svg'>
