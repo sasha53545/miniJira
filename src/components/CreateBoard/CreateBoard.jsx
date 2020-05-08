@@ -12,6 +12,8 @@ import {
 import {iconsRequest} from "../../reducers/icons";
 import {categoriesRequest} from "../../reducers/categories";
 import {boardPostRequest} from "../../reducers/board";
+import {Button, Rectangle, SvgButton} from "../Dashboard/Dashboard";
+import {Input} from "../SignIn/SignIn";
 
 const CreateBoard = () => {
     const categories = useSelector(state => state.categories.data);
@@ -156,11 +158,10 @@ const CreateBoard = () => {
                                 <div className={css.title}>
                                     Add Field
                                 </div>
-                                <form className={css.form}
-                                      onSubmit={onSubmit}>    {/*Почему onSubmit пишем здесь а не у кнопки, как он понимает к какой из кнопки относится это событие*/}
+                                <form className={css.form}>    {/*Почему onSubmit пишем здесь а не у кнопки, как он понимает к какой из кнопки относится это событие*/}
                                     <div className={css.form_group}>    {/*Первое поле*/}
                                         <label htmlFor="title">Title:</label>
-                                        <input type="text" className={css.form_control}
+                                        <Input type="text" className={css.form_control}
                                                style={{borderColor: errorsValidation && errorsValidation.title ? 'red' : null}}
                                                name='title'
                                                value={formPost.title}
@@ -171,7 +172,7 @@ const CreateBoard = () => {
                                     </div>
                                     <div className={css.form_group}>       {/*Второе поле*/}
                                         <label htmlFor="key">Key:</label>
-                                        <input type="text" className={css.form_control} name='key'
+                                        <Input type="text" className={css.form_control} name='key'
                                                value={formPost.key}
                                                style={{borderColor: errorsValidation && errorsValidation.key ? 'red' : null}}
                                                onChange={onChange}
@@ -203,9 +204,22 @@ const CreateBoard = () => {
                                         </select>
                                     </div>
                                     <div className={css.buttons}>
-                                        <button type="submit" className={css.btn}>Add</button>
-                                        <button type="submit" className={css.btn} onClick={isCancel}>Cancel
-                                        </button>
+                                        <Button onClick={onSubmit}>
+                                            Add
+                                            <SvgButton className='svg' viewBox='0 0 150 50'
+                                                       xmlns='http://www.w3.org/2000/svg'>
+                                                <Rectangle className='rectangle' x='0' y='0' fill='none' width='150'
+                                                           height='50'/>
+                                            </SvgButton>
+                                        </Button>
+                                        <Button onClick={isCancel}>
+                                            Cancel
+                                            <SvgButton className='svg' viewBox='0 0 150 50'
+                                                       xmlns='http://www.w3.org/2000/svg'>
+                                                <Rectangle className='rectangle' x='0' y='0' fill='none' width='150'
+                                                           height='50'/>
+                                            </SvgButton>
+                                        </Button>
                                     </div>
                                 </form>
                             </div>

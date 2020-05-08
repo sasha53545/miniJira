@@ -13,7 +13,43 @@ import {
     localStorageSetItemRequest,
     signInRequest
 } from "../../reducers/auth";
+import styled, {keyframes} from "styled-components";
+import {animateHoverButtons, Button, Rectangle, SvgButton} from "../Dashboard/Dashboard";
 
+const animateLineNav = keyframes`
+    from {
+    }
+
+    to {
+        border-bottom: 2px black solid;
+    }
+`;
+
+const ButtonAuth = styled(Button)`
+    width: 250px;
+    height: 70px;
+    justify-content: space-evenly;
+    text-transform: none;
+    :hover {
+        animation: ${animateHoverButtons} .4s ease-in-out;
+        animation-fill-mode: forwards;
+    }
+`;
+
+export const Input = styled.input`
+    outline:none;
+    :focus {
+        border: 2px #43a047 solid;
+    }
+`;
+
+const NavItem = styled.div`
+    transition: 0.6s;
+    :hover {
+        animation: ${animateLineNav} .5s ease-in-out 0.4s;
+        animation-fill-mode: forwards;
+    }
+`;
 const SignIn = (props) => {
     const errorAuth = useSelector(state => state.auth.error);
     const loaderAuth = useSelector(state => state.auth.loader);
@@ -75,8 +111,8 @@ const SignIn = (props) => {
 
     const validateForm = (form) => {
         const errors = {
-            email: form.email.length === 0 ? 'Name should not be empty' : null,
-            password: form.password.length === 0 ? 'Password should not be empty' : null,
+            email: form.email.length === 0 ? 'Enter email' : null,
+            password: form.password.length === 0 ? 'Enter password' : null,
         };
 
         for (let key of Object.keys(errors)) {
@@ -109,11 +145,11 @@ const SignIn = (props) => {
                             <h1>MiniJira</h1>
                         </div>
                         <div className={css.header_nav}>
-                            <div onClick={() => {
+                            <NavItem onClick={() => {
                                 customHistory.push('/signUp')
                             }}>
                                 Sign Up
-                            </div>
+                            </NavItem>
                         </div>
                     </header>
                     <main className={css.main}>
@@ -123,27 +159,19 @@ const SignIn = (props) => {
                                     Sign In
                                 </div>
                                 <div className={css.auth_buttons}>
-                                    <button className={css.auth_button} onClick={signInWithGoogle}>
-                                        <div className={css.auth_icon}>
-                                            {googleAuthIcon()}
-                                        </div>
-                                        <div>
-                                            Sign in with Google
-                                        </div>
-                                    </button>
-                                    <button className={css.auth_button} onClick={signInWithGoogle}>
-                                        <div className={css.auth_icon}>
-                                            {facebookAuthIcon()}
-                                        </div>
-                                        <div>
-                                            Sign in with Facebook
-                                        </div>
-                                    </button>
+                                    <ButtonAuth onClick={signInWithGoogle}>
+                                        {googleAuthIcon()}
+                                        Sign in with Google
+                                    </ButtonAuth>
+                                    <ButtonAuth onClick={signInWithGoogle}>
+                                        {facebookAuthIcon()}
+                                        Sign in with Facebook
+                                    </ButtonAuth>
                                 </div>
-                                <form className={css.form} onSubmit={onSubmit}>
+                                <form className={css.form}>
                                     <div className={css.form_group}>
                                         <label htmlFor="inputEmail">Email address:</label>
-                                        <input type="text" className={css.form_control}
+                                        <Input type="text" className={css.form_control}
                                                style={{borderColor: errorsValidation && errorsValidation.email ? 'red' : ''}}
                                                name='email' value={form.email}
                                                onChange={onChange}
@@ -153,7 +181,7 @@ const SignIn = (props) => {
                                     </div>
                                     <div className={css.form_group}>
                                         <label htmlFor="inputPassword">Password:</label>
-                                        <input type="password" className={css.form_control}
+                                        <Input type="password" className={css.form_control}
                                                style={{borderColor: errorsValidation && errorsValidation.password ? 'red' : ''}}
                                                name='password'
                                                value={form.password} onChange={onChange}
@@ -162,8 +190,22 @@ const SignIn = (props) => {
                                         <ErrorValidation error={errorsValidation.password}/>}
                                     </div>
                                     <div className={css.buttons}>
-                                        <button type="submit" className={css.btn}>Send</button>
-                                        <button className={css.btn} onClick={isCancel}>Cancel</button>
+                                        <Button onClick={onSubmit}>
+                                            Send
+                                            <SvgButton className='svg' viewBox='0 0 150 50'
+                                                       xmlns='http://www.w3.org/2000/svg'>
+                                                <Rectangle className='rectangle' x='0' y='0' fill='none' width='150'
+                                                           height='50'/>
+                                            </SvgButton>
+                                        </Button>
+                                        <Button onClick={isCancel}>
+                                            Cancel
+                                            <SvgButton className='svg' viewBox='0 0 150 50'
+                                                       xmlns='http://www.w3.org/2000/svg'>
+                                                <Rectangle className='rectangle' x='0' y='0' fill='none' width='150'
+                                                           height='50'/>
+                                            </SvgButton>
+                                        </Button>
                                     </div>
                                 </form>
                             </div>

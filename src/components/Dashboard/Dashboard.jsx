@@ -8,17 +8,20 @@ import {useDispatch, useSelector} from "react-redux";
 import {boardGetRequest} from "../../reducers/board";
 import {localStorageRemoveItemRequest} from "../../reducers/auth";
 import styled, {keyframes} from "styled-components";
-import ButtonJS from './../../Tabs/Button/Button';
+import Ripple from "../../Tabs/Button/Button";
 
 //----------STYLED_COMPONENTS-----------
 //---------------------------------------animation--
 const animate = keyframes`
     from {
+        border: 1px white solid;
     }
 
     to {
+        box-shadow: 0 0 10px #43a047, 0 0 40px #43a047, 0 0 80px #43a047;
         background-color: #43a047;
         color: white;
+        border: 1px #43a047 solid;
     }
 `;
 
@@ -31,20 +34,6 @@ export const animateHoverButtons = keyframes`
         box-shadow: 0 0 10px #43a047, 0 0 40px #43a047, 0 0 80px #43a047;
         background-color: #43a047;
         color: white;
-    }
-`;
-
-export const animateRipple = keyframes`
-    0% 
-    {
-        width: 0px;
-        height: 0px;
-    }
-    100%
-    {
-    width: 500px;
-    height: 500px;
-    opacity: 0;
     }
 `;
 
@@ -112,7 +101,7 @@ const BoardTableBodyRow = styled.tr`
     
     &:hover {
     cursor: pointer;
-    animation: ${animate} .6s ease-in-out;
+    animation: ${animate} .5s ease-in-out;
     animation-fill-mode: forwards;
     }
 `;
@@ -134,6 +123,7 @@ const BoardButtons = styled.div`
 
 export const Button = styled.div`
     display: flex;
+    justify-content: center;
     align-items: center;
     width: 150px;
     height: 50px;
@@ -143,20 +133,16 @@ export const Button = styled.div`
     cursor: pointer;
     
     :hover {
-        animation: ${animateHoverButtons} .6s ease-in-out 0.6s;
+        animation: ${animateHoverButtons} .5s ease-in-out 0.4s;
         animation-fill-mode: forwards;
     }
 `;
 
-const ButtonAddField = styled(Button)`
-    justify-content: center;
-`;
-
-const Rectangle = styled.rect`
+export const Rectangle = styled.rect`
     stroke: black;
     stroke-width: 3px;
     stroke-dasharray: 400, 0;
-    transition: 1s;
+    transition: 0.6s;
     
     ${Button}:hover & {
         stroke: #43a047;
@@ -167,16 +153,7 @@ const Rectangle = styled.rect`
     
 `;
 
-const RippleHelper = styled.span`
-    position; absolute;
-    background: #fff;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    border-radius: 50%;
-    animation: animate 1s linear infinite;
-`;
-
-const SvgButton = styled.svg`
+export const SvgButton = styled.svg`
     position: absolute;
     top: 0;
     left: 0;
@@ -245,7 +222,6 @@ const Dashboard = () => {
         page: 0,
         amount: 5
     });
-    const [coord, setCoord] = useState({x: 0});
 
     useEffect(() => {
         dispatch(boardGetRequest());
@@ -293,15 +269,14 @@ const Dashboard = () => {
                                     </tbody>
                                 </BoardTable>
                                 <BoardButtons>
-                                    <ButtonJS children={coord.x} onClick={() => {
-                                        setCoord({x: coord.x + 1});
-                                    }}/>
-                                    <ButtonAddField onClick={() => customHistory.push('/createBoard')}>
+                                    <Button onClick={() => customHistory.push('/createBoard')}>
                                         Add field
-                                        <SvgButton className='svg' viewBox='0 0 150 50' xmlns='http://www.w3.org/2000/svg'>
-                                            <Rectangle className='rectangle' x='0' y='0' fill='none' width='150' height='50'/>
+                                        <SvgButton className='svg' viewBox='0 0 150 50'
+                                                   xmlns='http://www.w3.org/2000/svg'>
+                                            <Rectangle className='rectangle' x='0' y='0' fill='none' width='150'
+                                                       height='50'/>
                                         </SvgButton>
-                                    </ButtonAddField>
+                                    </Button>
                                     <ButtonPreviousNextWrapper>
                                         <ButtonPreviousNext onClick={() => {
                                             setTablePage({
@@ -311,8 +286,10 @@ const Dashboard = () => {
                                         }}>
                                             <SvgPreviousWrapper>{nextPreviousIcon()}</SvgPreviousWrapper>
                                             <TextPrevious>Previous</TextPrevious>
-                                            <SvgButton className='svg' viewBox='0 0 150 50' xmlns='http://www.w3.org/2000/svg'>
-                                                <Rectangle className='rectangle' x='0' y='0' fill='none' width='150' height='50'/>
+                                            <SvgButton className='svg' viewBox='0 0 150 50'
+                                                       xmlns='http://www.w3.org/2000/svg'>
+                                                <Rectangle className='rectangle' x='0' y='0' fill='none' width='150'
+                                                           height='50'/>
                                             </SvgButton>
                                         </ButtonPreviousNext>
                                         <ButtonPreviousNext onClick={() => {
@@ -323,8 +300,10 @@ const Dashboard = () => {
                                         }}>
                                             <TextNext>Next</TextNext>
                                             <SvgNextWrapper>{nextPreviousIcon()}</SvgNextWrapper>
-                                            <SvgButton className='svg' viewBox='0 0 150 50' xmlns='http://www.w3.org/2000/svg'>
-                                                <Rectangle className='rectangle' x='0' y='0' fill='none' width='150' height='50'/>
+                                            <SvgButton className='svg' viewBox='0 0 150 50'
+                                                       xmlns='http://www.w3.org/2000/svg'>
+                                                <Rectangle className='rectangle' x='0' y='0' fill='none' width='150'
+                                                           height='50'/>
                                             </SvgButton>
                                         </ButtonPreviousNext>
                                     </ButtonPreviousNextWrapper>

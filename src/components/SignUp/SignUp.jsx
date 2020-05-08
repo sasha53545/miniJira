@@ -7,6 +7,8 @@ import {Footer} from "../Footer/Footer";
 import {useDispatch, useSelector} from "react-redux";
 import ErrorMessage from "../Errors/ErrorMessage/ErrorMessage";
 import {signUpRequest} from "../../reducers/auth";
+import {Button, Rectangle, SvgButton} from "../Dashboard/Dashboard";
+import {Input} from "../SignIn/SignIn";
 
 const SignUp = () => {
     const errorAuth = useSelector(state => state.auth.error);
@@ -45,9 +47,9 @@ const SignUp = () => {
 
     const validateForm = (form) => {
         const errors = {
-            name: form.name.length === 0 ? 'Name should not be empty' : null,
-            email: form.email.length === 0 ? 'Email should not be empty' : null,
-            password: form.password.length === 0 ? 'Password should not be empty' : null,
+            name: form.name.length === 0 ? 'Enter name' : null,
+            email: form.email.length === 0 ? 'Enter email' : null,
+            password: form.password.length === 0 ? 'Enter password' : null,
         };
 
         for (let key of Object.keys(errors)) {
@@ -95,11 +97,10 @@ const SignUp = () => {
                                 <div className={css.title}>
                                     Sign Up
                                 </div>
-                                <form className={css.form}
-                                      onSubmit={onSubmit}>    {/*Почему onSubmit пишем здесь а не у кнопки, как он понимает к какой из кнопки относится это событие*/}
+                                <form className={css.form}>
                                     <div className={css.form_group}>
                                         <label htmlFor="firstName">First name:</label>
-                                        <input type="text" className={css.form_control}
+                                        <Input type="text" className={css.form_control}
                                                style={{borderColor: errorsValidation && errorsValidation.name ? 'red' : ''}}
                                                name='name'
                                                value={form.name}
@@ -110,7 +111,7 @@ const SignUp = () => {
                                     </div>
                                     <div className={css.form_group}>
                                         <label htmlFor="email">Email address:</label>
-                                        <input type="text" className={css.form_control}
+                                        <Input type="text" className={css.form_control}
                                                style={{borderColor: errorsValidation && errorsValidation.email ? 'red' : ''}}
                                                name='email'
                                                value={form.email} onChange={onChange}
@@ -120,7 +121,7 @@ const SignUp = () => {
                                     </div>
                                     <div className={css.form_group}>
                                         <label htmlFor="password">Password:</label>
-                                        <input type="password" className={css.form_control}
+                                        <Input type="password" className={css.form_control}
                                                style={{borderColor: errorsValidation && errorsValidation.password ? 'red' : ''}}
                                                name='password'
                                                value={form.password} onChange={onChange}
@@ -130,15 +131,28 @@ const SignUp = () => {
                                     </div>
                                     <div className={css.form_group}>
                                         <label htmlFor="repeatPassword">Repeat password:</label>
-                                        <input type="password" className={css.form_control}
+                                        <Input type="password" className={css.form_control}
                                                name='repeatPassword'
                                                value={form.repeatPassword} onChange={onChange}
                                                placeholder="Repeat password"/>
                                     </div>
                                     <div className={css.buttons}>
-                                        <button type="submit" className={css.btn}>Send</button>
-                                        <button type="submit" className={css.btn} onClick={isCancel}>Cancel
-                                        </button>
+                                        <Button onClick={onSubmit}>
+                                            Send
+                                            <SvgButton className='svg' viewBox='0 0 150 50'
+                                                       xmlns='http://www.w3.org/2000/svg'>
+                                                <Rectangle className='rectangle' x='0' y='0' fill='none' width='150'
+                                                           height='50'/>
+                                            </SvgButton>
+                                        </Button>
+                                        <Button onClick={isCancel}>
+                                            Cancel
+                                            <SvgButton className='svg' viewBox='0 0 150 50'
+                                                       xmlns='http://www.w3.org/2000/svg'>
+                                                <Rectangle className='rectangle' x='0' y='0' fill='none' width='150'
+                                                           height='50'/>
+                                            </SvgButton>
+                                        </Button>
                                     </div>
                                 </form>
                             </div>
@@ -154,6 +168,6 @@ const SignUp = () => {
             }
         </div>
     );
-}
+};
 
 export default SignUp;

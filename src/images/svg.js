@@ -71,6 +71,8 @@ export const googleAuthIcon = () => {
             version="1.1"
             viewBox="0 0 128 128"
             xmlSpace="preserve"
+            width="40.966"
+            height="40.967"
         >
             <g>
                 <g fillRule="evenodd" clipRule="evenodd">
@@ -107,6 +109,8 @@ export const facebookAuthIcon = () => {
             version="1.1"
             viewBox="0 0 112.196 112.196"
             xmlSpace="preserve"
+            width="40.966"
+            height="40.967"
         >
             <circle cx="56.098" cy="56.098" r="56.098" fill="#3B5998"></circle>
             <path
