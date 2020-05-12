@@ -15,10 +15,14 @@ import {
     localStorageRemoveItemSucceed, localStorageSetItemFail, localStorageSetItemRequest,
     localStorageSetItemSucceed, signInFail, signInSucceed, signUpFail, signUpSucceed
 } from "./auth";
+import {tasksGetFail, tasksGetSucceed} from "./tasks";
+import {tasksGetAsync, tasksPostAsync} from "../service/task";
 
 function* mySagaWatcher() {
     yield takeEvery('BOARD_GET_REQUEST', boardGetWorker);
     yield takeEvery('BOARD_POST_REQUEST', boardPostWorker);
+    yield takeEvery('TASKS_GET_REQUEST', tasksGetWorker);
+    yield takeEvery('TASKS_POST_REQUEST', tasksPostWorker);
     yield takeEvery('ICONS_REQUEST', iconsWorker);
     yield takeEvery('CATEGORIES_REQUEST', categoriesWorker);
     yield takeEvery('SIGN_IN_REQUEST', signInWorker);
@@ -113,6 +117,29 @@ function* boardPostWorker(action) {
     }
 }
 
+// ---------TASKS-------------
+//----------------------------tasks_get-----
+function* tasksGetWorker() {
+    try {
+        const json = yield call(tasksGetAsync);
+        yield put(tasksGetSucceed({tasks: json}));
+    } catch (error) {
+        yield put(tasksGetFail({error: error.message}));
+    }
+}
+
+//----------------------------tasks_post-----
+function* tasksPostWorker(action) {
+    try {
+        yield put(localStorageGetItemRequest({key: 'TOKEN'}));
+        yield call(() => tasksPostAsync(action.payload.token, action.payload.tasks));
+        yield customHistory.push('/dashboard');
+        yield put(boardPostSucceed());
+    } catch (error) {
+        yield put(boardPostFail({error: error.message}));
+    }
+}
+
 // ---------AUTH-------------
 //----------------------------sign_in-----
 function* signInWorker(action) {
@@ -129,12 +156,7 @@ function* signInWorker(action) {
 //----------------------------sign_up-----
 function* signUpWorker(action) {
     try {
-        const form = {
-            name: action.payload.name,
-            email: action.payload.email,
-            password: action.payload.name,
-        };
-        const json = yield call(() => signUpAsync(form));
+        const json = yield call(() => signUpAsync(action.payload));
         yield put(localStorageSetItemRequest({token: 'TOKEN', data: json}));
         yield customHistory.push('/dashboard');
         yield put(signUpSucceed());

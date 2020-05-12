@@ -1,10 +1,8 @@
 import React, {useEffect, useState} from "react";
-import css from './CreateBoard.module.css';
 import {customHistory} from "../../index";
 import ErrorMessage from "../Errors/ErrorMessage/ErrorMessage";
 import ErrorValidation from "../Errors/ErrorValidation/ErrorValidation";
 import {Preloader} from "../Preloader/Preloader";
-import {Footer} from "../Footer/Footer";
 import {useDispatch, useSelector} from "react-redux";
 import {
     localStorageRemoveItemRequest,
@@ -12,6 +10,13 @@ import {
 import {iconsRequest} from "../../reducers/icons";
 import {categoriesRequest} from "../../reducers/categories";
 import {boardPostRequest} from "../../reducers/board";
+import Button, {SvgButton} from "../../styledComponents/Button";
+import {Header, HeaderNav, HeaderNavItem} from "../../styledComponents/Header";
+import {Body, BodyWrapperForm, ButtonsWrapper, Form, FormWrapper} from "../../styledComponents/Body";
+import Footer from "../../styledComponents/Footer";
+import {FormGroup, FormInput, FormSelect} from "../../styledComponents/Form";
+import {Title} from "../../styledComponents/Title";
+
 
 const CreateBoard = () => {
     const categories = useSelector(state => state.categories.data);
@@ -132,56 +137,53 @@ const CreateBoard = () => {
         <div>
             {(loaderIcons === true || loaderCategories === true) ?
                 <Preloader/> :
-                <div className={css.body_wrap}>
-                    <header className={css.header}>
-                        <div className={css.header_title}>
-                            <h1>MiniJira</h1>
-                        </div>
-                        <div className={css.header_nav}>
-                            <div onClick={() => {
+                <div>
+                    <Header>
+                        <h1>MiniJira</h1>
+                        <HeaderNav>
+                            <HeaderNavItem onClick={() => {
                                 customHistory.push('/dashboard')
                             }}>
                                 Back
-                            </div>
-                            <div onClick={() => {
+                            </HeaderNavItem>
+                            <HeaderNavItem onClick={() => {
                                 dispatch(localStorageRemoveItemRequest({key: 'TOKEN'}));
                             }}>
                                 Log Out
-                            </div>
-                        </div>
-                    </header>
-                    <main className={css.main}>
-                        <div className={css.content}>
-                            <div className={css.form_block}>
-                                <div className={css.title}>
+                            </HeaderNavItem>
+                        </HeaderNav>
+                    </Header>
+                    <Body>
+                        <BodyWrapperForm>
+                            <FormWrapper>
+                                <Title>
                                     Add Field
-                                </div>
-                                <form className={css.form}
-                                      onSubmit={onSubmit}>    {/*Почему onSubmit пишем здесь а не у кнопки, как он понимает к какой из кнопки относится это событие*/}
-                                    <div className={css.form_group}>    {/*Первое поле*/}
+                                </Title>
+                                <Form>
+                                    <FormGroup>
                                         <label htmlFor="title">Title:</label>
-                                        <input type="text" className={css.form_control}
-                                               style={{borderColor: errorsValidation && errorsValidation.title ? 'red' : null}}
-                                               name='title'
-                                               value={formPost.title}
-                                               onChange={onChange}
-                                               placeholder="Title"/>
+                                        <FormInput type="text"
+                                                   style={{borderColor: errorsValidation && errorsValidation.title ? 'red' : null}}
+                                                   name='title'
+                                                   value={formPost.title}
+                                                   onChange={onChange}
+                                                   placeholder="Title"/>
                                         {errorsValidation && errorsValidation.title &&
                                         <ErrorValidation error={errorsValidation.title}/>}
-                                    </div>
-                                    <div className={css.form_group}>       {/*Второе поле*/}
+                                    </FormGroup>
+                                    <FormGroup>
                                         <label htmlFor="key">Key:</label>
-                                        <input type="text" className={css.form_control} name='key'
-                                               value={formPost.key}
-                                               style={{borderColor: errorsValidation && errorsValidation.key ? 'red' : null}}
-                                               onChange={onChange}
-                                               placeholder="Key"/>
+                                        <FormInput type="text" name='key'
+                                                   value={formPost.key}
+                                                   style={{borderColor: errorsValidation && errorsValidation.key ? 'red' : null}}
+                                                   onChange={onChange}
+                                                   placeholder="Key"/>
                                         {errorsValidation && errorsValidation.key &&
                                         <ErrorValidation error={errorsValidation.key}/>}
-                                    </div>
-                                    <div className={css.form_group}>   {/*Третье поле*/}
+                                    </FormGroup>
+                                    <FormGroup>
                                         <label htmlFor="category">Categories:</label>
-                                        <select className={css.form_control}
+                                        <FormSelect
                                                 value={formPost.category.value || ''}
                                                 onChange={onChangeCategoryAndIcon} name="category">
                                             <option value={''} disabled>Select category
@@ -189,34 +191,37 @@ const CreateBoard = () => {
                                             {categories.map((item, index) => {
                                                 return <option key={index}>{item.value}</option>
                                             })}
-                                        </select>
-                                    </div>
-                                    <div className={css.form_group}>   {/*Четвертое поле*/}
+                                        </FormSelect>
+                                    </FormGroup>
+                                    <FormGroup>
                                         <label htmlFor="icon">Icons:</label>
-                                        <select className={css.form_control}
+                                        <FormSelect
                                                 value={formPost.icon.value || ''}
                                                 onChange={onChangeCategoryAndIcon} name="icon">
                                             <option value={''} disabled>Select icon</option>
                                             {icons.map((item, index) => {
                                                 return <option key={index}>{item.value}</option>
                                             })}
-                                        </select>
-                                    </div>
-                                    <div className={css.buttons}>
-                                        <button type="submit" className={css.btn}>Add</button>
-                                        <button type="submit" className={css.btn} onClick={isCancel}>Cancel
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                            <div className={css.error_message}>
+                                        </FormSelect>
+                                    </FormGroup>
+                                    <ButtonsWrapper>
+                                        <Button onClick={onSubmit}>
+                                            <SvgButton/>
+                                            Add
+                                        </Button>
+                                        <Button onClick={isCancel}>
+                                            <SvgButton/>
+                                            Cancel
+                                        </Button>
+                                    </ButtonsWrapper>
+                                </Form>
+                            </FormWrapper>
                                 {(errorBoard || errorAuth || errorIconsAuth || errorCategoriesAuth) && <ErrorMessage/>}
-                            </div>
-                        </div>
-                    </main>
-                    <footer className={css.footer}>
-                        <Footer/>
-                    </footer>
+                        </BodyWrapperForm>
+                    </Body>
+                    <Footer>
+                        Made by Kazakov Alexander
+                    </Footer>
                 </div>
             }
         </div>

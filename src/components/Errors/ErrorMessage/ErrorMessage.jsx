@@ -1,13 +1,13 @@
 import React from "react";
-import css from './ErrorMessage.module.css';
 import {useSelector} from "react-redux";
+import {Error} from "../../../styledComponents/ErrorMessage";
 
 function ErrorMessage() {
     const error = useSelector(state => state.auth.error || state.board.error || state.icons.error || state.categories.error);
     return (
-        <div className={css.main}>
+        <Error>
             {error}
-        </div>
+        </Error>
     );
 }
 

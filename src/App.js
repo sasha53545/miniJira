@@ -3,7 +3,7 @@ import Dashboard from "./components/Dashboard/Dashboard";
 import SignIn from "./components/SignIn/SignIn";
 import SignUp from "./components/SignUp/SignUp";
 import CreateBoard from "./components/CreateBoard/CreateBoard";
-import {Tasks} from "./components/Tasks/Tasks";
+import Tasks from "./components/Tasks/Tasks";
 import {useDispatch, useSelector} from "react-redux";
 import {localStorageGetItemRequest} from "./reducers/auth";
 import {Redirect, Route, Switch} from "react-router-dom";
@@ -14,7 +14,7 @@ const App = () => {
 
     useEffect(() => {
         dispatch(localStorageGetItemRequest({key: 'TOKEN'}), []);
-    }, [localStorageGetItemRequest]);
+    }, []);
 
     return (
         <div>

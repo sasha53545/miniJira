@@ -1,12 +1,12 @@
 import React from "react";
 import css from './ErrorValidation.module.css'
-import {errorValidationIcon} from "../../../images/svg";
+import ErrorValidationIcon from "../../../svg/ErrorValidationIcon";
 
 function ErrorValidation(props) {
     return (
         <div className={css.main}>
             <div className={css.svg_block}>
-                {errorValidationIcon()}
+                <ErrorValidationIcon/>
                 <div className={css.block}>
                 {props.error}
                 </div>

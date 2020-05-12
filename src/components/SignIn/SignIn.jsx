@@ -1,18 +1,50 @@
 import React, {useEffect, useState} from "react";
-import css from "./SignIn.module.css";
 import {customHistory} from "../../index";
 import ErrorMessage from "../Errors/ErrorMessage/ErrorMessage";
 import ErrorValidation from "../Errors/ErrorValidation/ErrorValidation";
 import {googleAuthAsync} from "../../service/auth";
 import {Preloader} from "../Preloader/Preloader";
-import {Footer} from "../Footer/Footer";
-import {facebookAuthIcon, googleAuthIcon} from "../../images/svg";
+import facebookAuthIcon from "../../svg/FacebookAuthIcon";
+import googleAuthIcon from "../../svg/GoogleAuthIcon";
 import {useDispatch, useSelector} from "react-redux";
 import {
     authState,
     localStorageSetItemRequest,
     signInRequest
 } from "../../reducers/auth";
+import styled from "styled-components";
+import Button, {animateHoverButton, SvgButton} from "../../styledComponents/Button";
+import Footer from "../../styledComponents/Footer";
+import {Header, HeaderNav, HeaderNavItem} from "../../styledComponents/Header";
+import {
+    Body,
+    BodyWrapperForm,
+    ButtonsWrapper,
+    Form,
+    FormWrapper
+} from "../../styledComponents/Body";
+import {FormGroup, FormInput} from "../../styledComponents/Form";
+import {Title} from "../../styledComponents/Title";
+import GoogleAuthIcon from "../../svg/GoogleAuthIcon";
+import FacebookAuthIcon from "../../svg/FacebookAuthIcon";
+
+const ButtonsAuthWrapper = styled.div`
+    width: 85%;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0 20px 0;
+`;
+
+const ButtonAuth = styled(Button)`
+    width: 250px;
+    height: 70px;
+    justify-content: space-evenly;
+    text-transform: none;
+    :hover {
+        animation: ${animateHoverButton} .5s ease-in-out;
+        animation-fill-mode: forwards;
+    }
+`;
 
 const SignIn = (props) => {
     const errorAuth = useSelector(state => state.auth.error);
@@ -75,8 +107,8 @@ const SignIn = (props) => {
 
     const validateForm = (form) => {
         const errors = {
-            email: form.email.length === 0 ? 'Name should not be empty' : null,
-            password: form.password.length === 0 ? 'Password should not be empty' : null,
+            email: form.email.length === 0 ? 'Enter email' : null,
+            password: form.password.length === 0 ? 'Enter password' : null,
         };
 
         for (let key of Object.keys(errors)) {
@@ -104,77 +136,71 @@ const SignIn = (props) => {
             {(loaderAuth === true) ?
                 <Preloader/> :
                 <div>
-                    <header className={css.header}>
-                        <div className={css.header_title}>
-                            <h1>MiniJira</h1>
-                        </div>
-                        <div className={css.header_nav}>
-                            <div onClick={() => {
+                    <Header>
+                        <h1>MiniJira</h1>
+                        <HeaderNav>
+                            <HeaderNavItem onClick={() => {
                                 customHistory.push('/signUp')
                             }}>
                                 Sign Up
-                            </div>
-                        </div>
-                    </header>
-                    <main className={css.main}>
-                        <div className={css.content}>
-                            <div className={css.form_block}>
-                                <div className={css.title}>
+                            </HeaderNavItem>
+                        </HeaderNav>
+                    </Header>
+                    <Body>
+                        <BodyWrapperForm>
+                            <FormWrapper>
+                                <Title>
                                     Sign In
-                                </div>
-                                <div className={css.auth_buttons}>
-                                    <button className={css.auth_button} onClick={signInWithGoogle}>
-                                        <div className={css.auth_icon}>
-                                            {googleAuthIcon()}
-                                        </div>
-                                        <div>
-                                            Sign in with Google
-                                        </div>
-                                    </button>
-                                    <button className={css.auth_button} onClick={signInWithGoogle}>
-                                        <div className={css.auth_icon}>
-                                            {facebookAuthIcon()}
-                                        </div>
-                                        <div>
-                                            Sign in with Facebook
-                                        </div>
-                                    </button>
-                                </div>
-                                <form className={css.form} onSubmit={onSubmit}>
-                                    <div className={css.form_group}>
+                                </Title>
+                                <ButtonsAuthWrapper>
+                                    <ButtonAuth onClick={signInWithGoogle}>
+                                        <GoogleAuthIcon/>
+                                        Sign in with Google
+                                    </ButtonAuth>
+                                    <ButtonAuth onClick={signInWithGoogle}>
+                                        <FacebookAuthIcon/>
+                                        Sign in with Facebook
+                                    </ButtonAuth>
+                                </ButtonsAuthWrapper>
+                                <Form>
+                                    <FormGroup>
                                         <label htmlFor="inputEmail">Email address:</label>
-                                        <input type="text" className={css.form_control}
-                                               style={{borderColor: errorsValidation && errorsValidation.email ? 'red' : ''}}
-                                               name='email' value={form.email}
-                                               onChange={onChange}
-                                               aria-describedby="emailHelp" placeholder="Enter email"/>
+                                        <FormInput type="text"
+                                                   style={{borderColor: errorsValidation && errorsValidation.email ? 'red' : ''}}
+                                                   name='email' value={form.email}
+                                                   onChange={onChange}
+                                                   placeholder="Enter email"/>
                                         {errorsValidation && errorsValidation.email &&
                                         <ErrorValidation error={errorsValidation.email}/>}
-                                    </div>
-                                    <div className={css.form_group}>
+                                    </FormGroup>
+                                    <FormGroup>
                                         <label htmlFor="inputPassword">Password:</label>
-                                        <input type="password" className={css.form_control}
-                                               style={{borderColor: errorsValidation && errorsValidation.password ? 'red' : ''}}
-                                               name='password'
-                                               value={form.password} onChange={onChange}
-                                               placeholder="Password"/>
+                                        <FormInput type="password"
+                                                   style={{borderColor: errorsValidation && errorsValidation.password ? 'red' : ''}}
+                                                   name='password'
+                                                   value={form.password} onChange={onChange}
+                                                   placeholder="Password"/>
                                         {errorsValidation && errorsValidation.password &&
                                         <ErrorValidation error={errorsValidation.password}/>}
-                                    </div>
-                                    <div className={css.buttons}>
-                                        <button type="submit" className={css.btn}>Send</button>
-                                        <button className={css.btn} onClick={isCancel}>Cancel</button>
-                                    </div>
-                                </form>
-                            </div>
-                            <div className={css.error_message}>
-                                {errorAuth && <ErrorMessage/>}
-                            </div>
-                        </div>
-                    </main>
-                    <footer className={css.footer}>
-                        <Footer/>
-                    </footer>
+                                    </FormGroup>
+                                    <ButtonsWrapper>
+                                        <Button onClick={onSubmit}>
+                                            <SvgButton/>
+                                            Send
+                                        </Button>
+                                        <Button onClick={isCancel}>
+                                            <SvgButton/>
+                                            Cancel
+                                        </Button>
+                                    </ButtonsWrapper>
+                                </Form>
+                            </FormWrapper>
+                            {errorAuth && <ErrorMessage/>}
+                        </BodyWrapperForm>
+                    </Body>
+                    <Footer>
+                        Made by Kazakov Alexander
+                    </Footer>
                 </div>
             }
         </div>
