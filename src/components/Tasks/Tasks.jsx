@@ -72,6 +72,7 @@ const MainTaskItem = styled.div`
 `;
 
 const AddTask = styled(AddTaskIcon)`
+cursor: pointer;
     transition: 0.6s
     :hover {
         cursor: pointer;
