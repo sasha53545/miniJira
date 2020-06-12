@@ -2,21 +2,88 @@ import React from "react";
 
 const AddTaskIcon = () => {
     return (
-        <svg width={40} height={40}
-            xmlns="http://www.w3.org/2000/svg"
-            x="0"
-            y="0"
-            enableBackground="new 0 0 499.233 499.233"
-            version="1.1"
-            viewBox="0 0 499.233 499.233"
-            xmlSpace="preserve"
-            stroke='#43a047'
-        >
-            <path
-                d="M105.117 266.617h127.5v127.5c0 9.35 7.65 17 17 17s17-7.65 17-17v-127.5h127.5c9.35 0 17-7.65 17-17s-7.65-17-17-17h-127.5v-127.5c0-9.35-7.65-17-17-17s-17 7.65-17 17v127.5h-127.5c-9.35 0-17 7.65-17 17s7.65 17 17 17z"></path>
-            <path
-                d="M249.617 499.233c137.7 0 249.617-111.917 249.617-249.617S387.317 0 249.617 0 0 111.917 0 249.617s111.917 249.616 249.617 249.616zm0-465.233c119 0 215.617 96.617 215.617 215.617s-96.617 215.617-215.617 215.617S34 368.617 34 249.617 130.617 34 249.617 34z"></path>
-        </svg>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+        width="62"
+        height="62"
+        viewBox="0 0 62 62"
+      >
+          <defs>
+              <filter
+                id="filter-1"
+                width="170.8"
+                height="170.8"
+                x="-35.4"
+                y="-31.2"
+                filterUnits="objectBoundingBox"
+              >
+                  <feOffset
+                    dy="2"
+                    in="SourceAlpha"
+                    result="shadowOffsetOuter1"
+                  ></feOffset>
+                  <feGaussianBlur
+                    in="shadowOffsetOuter1"
+                    result="shadowBlurOuter1"
+                    stdDeviation="2"
+                  ></feGaussianBlur>
+                  <feColorMatrix
+                    in="shadowBlurOuter1"
+                    result="shadowMatrixOuter1"
+                    values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"
+                  ></feColorMatrix>
+                  <feMerge>
+                      <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                      <feMergeNode in="SourceGraphic"></feMergeNode>
+                  </feMerge>
+              </filter>
+              <circle id="path-2" cx="24" cy="24" r="24"></circle>
+              <filter
+                id="filter-3"
+                width="135.4"
+                height="135.4"
+                x="-17.7"
+                y="-13.5"
+                filterUnits="objectBoundingBox"
+              >
+                  <feOffset
+                    dy="2"
+                    in="SourceAlpha"
+                    result="shadowOffsetOuter1"
+                  ></feOffset>
+                  <feGaussianBlur
+                    in="shadowOffsetOuter1"
+                    result="shadowBlurOuter1"
+                    stdDeviation="2.5"
+                  ></feGaussianBlur>
+                  <feColorMatrix
+                    in="shadowBlurOuter1"
+                    values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"
+                  ></feColorMatrix>
+              </filter>
+          </defs>
+          <g fill="none" fillRule="evenodd" stroke="none" strokeWidth="1">
+              <g transform="translate(-1225 -101)">
+                  <g filter="url(#filter-1)" transform="translate(1232 104)">
+                      <path d="M12 12L36 12 36 36 12 36z"></path>
+                      <g fillRule="nonzero">
+                          <use
+                            fill="#000"
+                            filter="url(#filter-3)"
+                            xlinkHref="#path-2"
+                          ></use>
+                          <use fill="#9e9e9e" xlinkHref="#path-2"></use>
+                      </g>
+                      <path
+                        fill="#FFF"
+                        fillRule="nonzero"
+                        d="M31 25L25 25 25 31 23 31 23 25 17 25 17 23 23 23 23 17 25 17 25 23 31 23z"
+                      ></path>
+                  </g>
+              </g>
+          </g>
+      </svg>
     );
 };
 

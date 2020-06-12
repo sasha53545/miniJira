@@ -45,7 +45,7 @@ const Button = styled.div`
     cursor: pointer;
     
     :hover {
-        animation: ${animateHoverButton} .5s ease-in-out 0.4s;
+        animation: ${animateHoverButton} .4s ease-in-out 0.4s;
         animation-fill-mode: forwards;
     }
 `;
