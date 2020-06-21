@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Preloader} from "../Preloader/Preloader";
 import {customHistory} from "../../index";
 import {useDispatch, useSelector} from "react-redux";
@@ -9,6 +9,14 @@ import {localStorageRemoveItemRequest} from "../../reducers/auth";
 import styled, {keyframes} from "styled-components";
 import {Title} from "../../styledComponents/Title";
 import AddTaskIcon from "../../svg/AddTaskIcon";
+import {animateInputTask} from "../../styledComponents/AnimateInputTask";
+
+import {
+  createTaskAction,
+  taskOfBoardPost,
+  tasksGetRequest,
+  tasksPostRequest
+} from "../../reducers/tasks";
 
 export const animateAddTask = keyframes`
     from {
@@ -113,21 +121,59 @@ const AddTaskWrapper = styled.div`
     margin: 25px 0 0 0;
 `;
 
-const AddTaskInput = styled.input`
+const AddTaskInput = styled.input` 
+  animation: ${animateInputTask} 1s; 
+  padding: 0 0 0 15px;  
   width: 100%;
   height: 40px;
-  margin: 0 0 15px 0;
-  padding: 0 0 0 15px;
+  margin: 0 0 20px 0;
+`;
+
+const AddTaskButtonsWrapper = styled.div` 
+
+`;
+
+const AddTaskButton = styled.button` 
+
 `;
 
 const Tasks = () => {
-  const [inputTask, setInputTask] = useState(false);
   const loader = useSelector(state => state.auth.loader);
-  const tasks = useSelector(state => state.tasks.tasksOfBoard);
+  const tasks = useSelector(state => state.tasks.data);
+  const tasksID = useSelector(state => state.tasks.tasksID);
+  const tasksOfBoard = useSelector(state => state.tasks.tasksOfBoard);
+  const dataLocalstorage = useSelector(state => state.auth.localstorage.data);
   const dispatch = useDispatch();
+
+  const [addTask, setAddTask] = useState(false);
+  const [formPost, setFormPost] = useState({
+    title: '',
+    boardId: tasksID,
+    description: "",
+    parentTaskId: ""
+  });
 
   const onDragEnd = () => {
 
+  };
+
+  const onChange = (event) => {
+    if (event) {
+      event.preventDefault();
+    }
+
+    setFormPost({
+      ...formPost,
+      title: event.target.value
+    });
+  };
+
+  const clickHandler = () => {
+      // await dispatch(tasksPostRequest({token: dataLocalstorage, form: formPost, tasks: tasks}));
+      // await dispatch(tasksGetRequest());
+      dispatch(createTaskAction({token: dataLocalstorage, form: formPost, tasks: tasks}));
+
+    formPost.title = '';
   };
 
   return (
@@ -156,18 +202,26 @@ const Tasks = () => {
                 </TitleTaskList>
                 <DragAndDropTasks onDragEnd={onDragEnd}>
                   <VerticalColumnTasks>
-                    {tasks.map((item) => {
+                    {tasksOfBoard.map((item) => {
                       return <Task>{item.title}</Task>
                     })}
                   </VerticalColumnTasks>
                 </DragAndDropTasks>
               </ListTasksWrapper>
               <AddTaskWrapper>
-                {inputTask && <AddTaskInput type="text" placeholder="Введите название задачи"/>}
-                <SvgAddTaskWrapper onClick={() => setInputTask(true)}>
+                {addTask && <AddTaskInput type="text" name='task' value={formPost.title} onChange={onChange}
+                                          placeholder="Введите название задачи"/>}
+                <SvgAddTaskWrapper onClick={() => {
+                  clickHandler();
+                  setAddTask(true);
+                }}>
                   <AddShadow></AddShadow>
                   <AddTask/>
                 </SvgAddTaskWrapper>
+                {<AddTaskButtonsWrapper>
+                  <AddTaskButton/>
+                  <AddTaskButton/>
+                </AddTaskButtonsWrapper>}
               </AddTaskWrapper>
             </LeftBodyWrapper>
             <RightBodyWrapper>
@@ -195,6 +249,6 @@ const Tasks = () => {
       }
     </div>
   );
-}
+};
 
 export default Tasks;

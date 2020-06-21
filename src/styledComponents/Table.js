@@ -6,7 +6,7 @@ export const animateTableRow = keyframes`
     }
 
     to {
-        box-shadow: 0 0 10px #43a047, 0 0 40px #43a047, 0 0 80px #43a047;
+        box-shadow: 0 0 5px #43a047, 0 0 40px #43a047, 0 0 80px #43a047;
         background-color: #43a047;
         color: white;
         border: 1px #43a047 solid;

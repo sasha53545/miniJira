@@ -114,7 +114,7 @@ const Dashboard = () => {
                                                                          tasksToDispatch.push(task);
                                                                      }
                                                                  });
-                                                                 dispatch(tasksOfBoardGet({tasks: tasksToDispatch}));
+                                                                 dispatch(tasksOfBoardGet({tasks: tasksToDispatch, tasksID: item._id}));
                                                                  customHistory.push('/tasks');
                                                              }}>
                                             <TableImageWrapper><TableImage src={item.icon.value}/></TableImageWrapper>

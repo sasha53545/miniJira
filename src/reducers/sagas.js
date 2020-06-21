@@ -15,7 +15,7 @@ import {
     localStorageRemoveItemSucceed, localStorageSetItemFail, localStorageSetItemRequest,
     localStorageSetItemSucceed, signInFail, signInSucceed, signUpFail, signUpSucceed
 } from "./auth";
-import {tasksGetFail, tasksGetSucceed} from "./tasks";
+import {tasksGetFail, tasksGetSucceed, tasksPostFail, tasksPostSucceed} from "./tasks";
 import {tasksGetAsync, tasksPostAsync} from "../service/task";
 
 function* mySagaWatcher() {
@@ -132,11 +132,10 @@ function* tasksGetWorker() {
 function* tasksPostWorker(action) {
     try {
         yield put(localStorageGetItemRequest({key: 'TOKEN'}));
-        yield call(() => tasksPostAsync(action.payload.token, action.payload.tasks));
-        yield customHistory.push('/dashboard');
-        yield put(boardPostSucceed());
+        const json = yield call(() => tasksPostAsync(action.payload.token, action.payload.form));
+        yield put(tasksPostSucceed({tasks: json.tasks}));
     } catch (error) {
-        yield put(boardPostFail({error: error.message}));
+        yield put(tasksPostFail({error: error.message}));
     }
 }
 
